@@ -43,7 +43,6 @@ jobs:
             dotnet nuget push "$package" \
               -s "$NUGET_FEED_URL" \
               -k "$GH_PAT" \
-              --skip-duplicate \
               -t 600
 
             if [ $? -ne 0 ]; then
