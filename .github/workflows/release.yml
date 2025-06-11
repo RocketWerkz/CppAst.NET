@@ -30,7 +30,6 @@ jobs:
         continue-on-error: true
         run: ls src/CppAst/bin/Release
       - name: Publish
-        if: ${{ inputs.publish }}
         env:
           GH_PAT: ${{ secrets.GH_PAT }}
         run: |
