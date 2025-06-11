@@ -10,7 +10,7 @@ jobs:
     defaults:
       run:
         shell: bash
-    runs-on: [ self-hosted, "Unix" ]
+    runs-on: [ self-hosted, Unix ]
     steps:
       - uses: actions/checkout@v4
         with:
