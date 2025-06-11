@@ -23,9 +23,9 @@ jobs:
         with:
           dotnet-version: 9.0.x
       - name: Build
-        run: dotnet build -c Release
+        run: dotnet build -c Release src/CppAst/CppAst.csproj
       - name: Pack
-        run: dotnet pack -c Release
+        run: dotnet pack -c Release src/CppAst/CppAst.csproj
       - name: Show Files
         continue-on-error: true
         run: ls src/CppAst/bin/Release
