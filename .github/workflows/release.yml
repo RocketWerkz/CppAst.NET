@@ -10,7 +10,7 @@ jobs:
     defaults:
       run:
         shell: bash
-    runs-on: [ self-hosted, Unix ]
+    runs-on: [ ubuntu-22.04 ]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -18,6 +18,10 @@ jobs:
           fetch-depth: '0'
           lfs: true
           fetch-tags: 'true'
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
       - name: Build
         run: dotnet build -c Release
       - name: Pack
