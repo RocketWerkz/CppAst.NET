@@ -1,0 +1,52 @@
+name: Package CppAst NuGet Package
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  publish-package-on-tag:
+    defaults:
+      run:
+        shell: bash
+    runs-on: [ self-hosted, "Unix" ]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+          fetch-depth: '0'
+          lfs: true
+          fetch-tags: 'true'
+      - name: Build
+        run: dotnet build -c Release
+      - name: Pack
+        run: dotnet pack -c Release
+      - name: Show Files
+        continue-on-error: true
+        run: ls src/CppAst/bin/Release
+      - name: Publish
+        if: ${{ inputs.publish }}
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+        run: |
+          # Define variables
+          NUGET_FEED_URL="https://nuget.pkg.github.com/RocketWerkz/index.json"
+          PACKAGE_DIR="src/CppAst/bin/Release"
+
+          # Find and push each .nupkg file recursively
+          find "$PACKAGE_DIR" -type f -name "*.nupkg" | while read -r package; do
+            echo "Pushing $package"
+            dotnet nuget push "$package" \
+              -s "$NUGET_FEED_URL" \
+              -k "$GH_PAT" \
+              --skip-duplicate \
+              -t 600
+
+            if [ $? -ne 0 ]; then
+              echo "Failed to push $package!"
+              exit 1
+            fi
+          done
+
+          echo "All packages have been pushed successfully!"
