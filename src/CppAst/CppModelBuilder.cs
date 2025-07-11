@@ -116,10 +116,38 @@ namespace CppAst
             return null;
         }
         
-        private bool TryGetDeclarationContainer(CXCursor cursor, void* data, out string typeKey, out CppContainerContext containerContext)
+        private bool TryGetDeclarationContainer(CXCursor cursor, void* _, out string typeKey, out CppContainerContext containerContext)
         {
             typeKey = GetCursorKey(cursor);
             return _containers.TryGetValue(typeKey, out containerContext);
+
+            /*if (ParseSystemIncludes && !ReferenceEquals(_rootContainerContext, _systemRootContainerContext))
+            {
+                var oldContainer = _rootContainerContext;
+                _rootContainerContext = _systemRootContainerContext;
+                var systemTypeKey = GetCursorKey(cursor);
+                CppContainerContext systemContext = null;
+                _rootContainerContext = oldContainer;
+                var got = _containers.TryGetValue(systemTypeKey, out systemContext);
+                if (got)
+                {
+                    typeKey = systemTypeKey;
+                    containerContext = systemContext;
+                }
+                return got;
+            }*/
+            /*
+            // As expected given the official comment below, GetCppType wasn't working. I tracked it down to the _rootContainerContext being incorrect when calling
+            // the workaround. I realise that "no workaround" is the best fix, but I need to move on.
+            var previousContext = _rootContainerContext;
+            if (type.CanonicalType.Declaration.Location != CXSourceLocation.Null && ParseSystemIncludes)
+            {
+                _rootContainerContext = type.CanonicalType.Declaration.Location.IsInSystemHeader
+                    ? _systemRootContainerContext
+                    : _userRootContainerContext;
+            }
+            */
+            
         }
 
         private CppContainerContext GetDeclarationContainer(CXCursor cursor, void* data)
@@ -2056,9 +2084,22 @@ namespace CppAst
             {
                 return (CppType)containerContext.Container;
             }
+            
+            // As expected given the official comment below, GetCppType wasn't working. I tracked it down to the _rootContainerContext being incorrect when calling
+            // the workaround. I realise that "no workaround" is the best fix, but I need to move on.
+            var previousContext = _rootContainerContext;
+            if (type.CanonicalType.Declaration.Location != CXSourceLocation.Null && ParseSystemIncludes)
+            {
+                _rootContainerContext = type.CanonicalType.Declaration.Location.IsInSystemHeader
+                    ? _systemRootContainerContext
+                    : _userRootContainerContext;
+            }
 
             // TODO: Pseudo fix, we are not supposed to land here, as the TryGet before should resolve an existing type already declared (but not necessarily defined)
-            return GetCppType(type.CanonicalType.Declaration, type.CanonicalType, parent, data);
+            var returnValue = GetCppType(type.CanonicalType.Declaration, type.CanonicalType, parent, data);
+            _rootContainerContext = previousContext;
+           
+            return returnValue;
         }
 
         private static string GetCursorAsText(CXCursor cursor) => new CppTokenUtil.Tokenizer(cursor).TokensToString();
