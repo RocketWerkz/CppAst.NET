@@ -174,7 +174,8 @@ namespace CppAst
                     break;
                 case CppPrimitiveKind.Long:
                 case CppPrimitiveKind.UnsignedLong:
-                    sizeOf = 4; // This is incorrect
+                    // this is less incorrect.
+                    sizeOf = Environment.Is64BitProcess && !OperatingSystem.IsWindows() ? 8 : 4;
                     break;
                 case CppPrimitiveKind.LongLong:
                     sizeOf = 8;

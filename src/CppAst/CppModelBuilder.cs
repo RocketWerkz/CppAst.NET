@@ -2098,6 +2098,9 @@ namespace CppAst
             // TODO: Pseudo fix, we are not supposed to land here, as the TryGet before should resolve an existing type already declared (but not necessarily defined)
             var returnValue = GetCppType(type.CanonicalType.Declaration, type.CanonicalType, parent, data);
             _rootContainerContext = previousContext;
+
+            if (type.TypedefName.ToString() == "size_t")
+                return new CppTypedef("size_t", returnValue);
            
             return returnValue;
         }
@@ -2173,7 +2176,7 @@ namespace CppAst
                     return CppPrimitiveType.UnsignedInt;
 
                 case CXTypeKind.CXType_ULong:
-                    return type.SizeOf == 8 ? CppPrimitiveType.UnsignedLongLong : CppPrimitiveType.UnsignedLong;
+                    return CppPrimitiveType.UnsignedLong;
 
                 case CXTypeKind.CXType_ULongLong:
                     return CppPrimitiveType.UnsignedLongLong;
@@ -2194,7 +2197,7 @@ namespace CppAst
                     return CppPrimitiveType.Int;
 
                 case CXTypeKind.CXType_Long:
-                    return type.SizeOf == 8 ? CppPrimitiveType.LongLong : CppPrimitiveType.Long;
+                    return CppPrimitiveType.Long;
 
                 case CXTypeKind.CXType_LongLong:
                     return CppPrimitiveType.LongLong;

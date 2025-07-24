@@ -236,5 +236,65 @@ class TmpClass {
                 }
             );
         }
+        
+        [Test]
+        public void TestSizeT()
+        {
+            var clTools = "/Library/Developer/CommandLineTools";
+            var sdkPath = $"{clTools}/SDKs/MacOSX.sdk";
+
+            var options = new CppParserOptions
+            {
+                Defines =
+                {
+                    "__APPLE__=1",
+                    "__MACH__=1",
+                    "__clang__=1",
+                    "__GNUC__=17",
+                    "__LP64__=1",
+                },
+                ParseMacros = false,
+                SystemIncludeFolders =
+                {
+                    $"{sdkPath}/usr/include/c++/v1",
+                    $"{sdkPath}/usr/include",
+                    $"{sdkPath}/usr/include/sys",
+                    $"{sdkPath}/System/Library/Frameworks"
+                },
+                ParserKind = CppParserKind.Cpp
+            };
+            
+            ParseAssert("size_t a; unsigned long b; long c;",
+                compilation =>
+                {
+                    Assert.False(compilation.HasErrors);
+                    Assert.True(compilation.Fields[0].Type is CppTypedef { Name: "size_t", ElementType.SizeOf: 8 });
+
+                    if (OperatingSystem.IsWindows() || !Environment.Is64BitProcess)
+                    {
+                        Assert.True(compilation.Fields[1].Type is CppPrimitiveType
+                        {
+                            Kind: CppPrimitiveKind.UnsignedLong, SizeOf: 4
+                        });
+                        Assert.True(compilation.Fields[2].Type is CppPrimitiveType
+                        {
+                            Kind: CppPrimitiveKind.Long, SizeOf: 4
+                        });
+                    }
+                    else
+                    {
+                        Assert.True(compilation.Fields[1].Type is CppPrimitiveType
+                        {
+                            Kind: CppPrimitiveKind.UnsignedLong, SizeOf: 8
+                        });
+                        Assert.True(compilation.Fields[2].Type is CppPrimitiveType
+                        {
+                            Kind: CppPrimitiveKind.Long, SizeOf: 8
+                        });
+                    }
+                },
+                options
+            );
+        }
     }
 }
