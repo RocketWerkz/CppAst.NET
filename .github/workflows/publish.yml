@@ -1,4 +1,4 @@
-name: Package CppAst NuGet Package
+name: Publish
 
 on:
   push:
