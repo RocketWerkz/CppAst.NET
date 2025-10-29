@@ -168,6 +168,70 @@ struct HelloWorld
         }
 
         [Test]
+        public void TestAnonymousAlignment()
+        {
+            ParseAssert(@"
+struct Align4
+{
+    short a;
+    union {
+        short c;
+        int d;
+    };
+};
+
+struct Align8
+{
+    int a;
+    union {
+        int c;
+        void* d;
+    };
+};
+
+struct AlignShortShort
+{
+    short a;
+    union {
+        short c;
+        short d;
+    };
+    int after;
+};
+
+struct AlignNested
+{
+    short a;
+    union {
+        short c;
+        union {
+            short d;
+            int e;
+        };
+    };
+    int after;
+};
+",
+                compilation =>
+                {
+                    Assert.False(compilation.HasErrors);
+
+                    void Test(int classIndex, int expectedOffset)
+                    {
+                        var cppStruct = compilation.Classes[classIndex];
+                        var unionField = cppStruct.Fields[1];
+                        Assert.AreEqual(expectedOffset, unionField.Offset);
+                    }
+
+                    Test(0, 4);
+                    Test(1, 8);
+                    Test(2, 2);
+                    Test(3, 4);
+                }
+            );
+        }
+
+        [Test]
         public void TestAnonymousUnionWithField()
         {
             ParseAssert(@"

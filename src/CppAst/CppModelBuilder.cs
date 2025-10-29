@@ -530,12 +530,19 @@ namespace CppAst
                         // We try to recover the offset from the previous field
                         // Might not be always correct (with alignment rules),
                         // but not sure how to recover the offset without recalculating the entire offsets
-                        var offset = 0;
+                        // BF: disregard the above comment? as we are now aligning using the anonymous struct's AlignOf...
+                        var offset = 0L;
                         var cppClassContainer = containerContext.Container as CppClass;
                         if (cppClassContainer is object && cppClassContainer.Fields.Count > 0)
                         {
                             var lastField = cppClassContainer.Fields[cppClassContainer.Fields.Count - 1];
                             offset = (int)lastField.Offset + lastField.Type.SizeOf;
+                            offset = Align(offset, cppClass.AlignOf);
+
+                            static long Align(long offset, long alignment)
+                            {
+                                return (offset + alignment - 1) / alignment * alignment;
+                            }
                         }
 
                         // Create an anonymous field for the type
