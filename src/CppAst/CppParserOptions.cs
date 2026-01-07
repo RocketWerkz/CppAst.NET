@@ -4,6 +4,8 @@
 
 using System;
 using System.Collections.Generic;
+using CliWrap;
+using CliWrap.Buffered;
 
 namespace CppAst
 {
@@ -12,6 +14,23 @@ namespace CppAst
     /// </summary>
     public class CppParserOptions
     {
+        /// <summary>
+        /// Create a new instance of the native parser.
+        /// </summary>
+        public static CppParserOptions Create(CppParserKind kind)
+        {
+            var options = new CppParserOptions();
+
+            if (OperatingSystem.IsWindows())
+                options.ConfigureForWindowsMsvc();
+            else if (OperatingSystem.IsLinux())
+                options.ConfigureForLinux();
+            else if (OperatingSystem.IsMacOS())
+                options.ConfigureForMac();
+
+            return options;
+        }
+        
         /// <summary>
         /// Default constructor.
         /// </summary>
@@ -210,6 +229,64 @@ namespace CppAst
             AdditionalArguments.Add("-fms-extensions");
             AdditionalArguments.Add("-fms-compatibility");
             AdditionalArguments.Add($"-fms-compatibility-version={versionAsString}");
+            return this;
+        }
+        
+        public CppParserOptions ConfigureForLinux()
+        {
+            // TODO: implement properly for Linux
+            TargetCpu = CppTargetCpu.X86_64;
+            TargetVendor = "linux";
+            TargetSystem = "linux";
+            return this;
+        }
+
+        public CppParserOptions ConfigureForMac()
+        {
+            // TODO: infer the triple based on the clang output
+            TargetCpu = CppTargetCpu.ARM64;
+            TargetVendor = "apple";
+            TargetSystem = "darwin";
+
+            var isCpp = ParserKind == CppParserKind.Cpp;
+
+            // Write a temporary file with a simple main function to get the include paths
+            var temporaryFolder = Path.GetTempPath();
+            var tempFile = Path.Combine(temporaryFolder, isCpp ? "temp.cpp" : "temp.c");
+            File.WriteAllText(tempFile, "int main() { return 0; }");
+
+            // Use clang to get the include paths
+            var result = Cli.Wrap(isCpp ? "clang++" : "clang")
+                .WithArguments(["-###", "-x", isCpp ? "c++" : "c", tempFile])
+                .ExecuteBufferedAsync()
+                .GetAwaiter()
+                .GetResult();
+
+            var text = result.StandardError;
+
+            var includeFolders = new List<string>();
+            var systemIncludeFolders = new List<string>();
+
+            // split the output into tokens, each token is "quoted"
+            var tokens = text.Split('"').Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
+
+            // Try to read the include paths from the output
+            for (var i = 0; i < tokens.Length; i++)
+            {
+                var token = tokens[i];
+                if (token.StartsWith("-I"))
+                    includeFolders.Add(token.Substring(2));
+                else if (token is "-internal-isystem" or "-internal-externc-isystem")
+                    systemIncludeFolders.Add(tokens[++i]);
+            }
+
+            // Add them to the options
+            IncludeFolders.AddRange(includeFolders);
+            SystemIncludeFolders.AddRange(systemIncludeFolders);
+
+            // Clean up the temporary file
+            File.Delete(tempFile);
+
             return this;
         }
     }
