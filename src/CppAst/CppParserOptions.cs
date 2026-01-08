@@ -274,6 +274,10 @@ namespace CppAst
             // Add them to the options
             IncludeFolders.AddRange(includeFolders);
             SystemIncludeFolders.AddRange(systemIncludeFolders);
+        
+            var clTools = "/Library/Developer/CommandLineTools";
+            var sdkPath = $"{clTools}/SDKs/MacOSX.sdk";
+            AdditionalArguments.AddRange("-isysroot", sdkPath);
 
             // Clean up the temporary file
             File.Delete(tempFile);
