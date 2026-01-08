@@ -253,7 +253,6 @@ class TmpClass {
                     "__GNUC__=17",
                     "__LP64__=1",
                 },
-                ParseMacros = false,
                 SystemIncludeFolders =
                 {
                     $"{sdkPath}/usr/include/c++/v1",

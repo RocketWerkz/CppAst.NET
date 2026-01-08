@@ -93,7 +93,7 @@ namespace CppAst.Tests
                         Assert.AreEqual(CppTokenKind.Comment, macro.Tokens[1].Kind);
                     }
                 }
-                , new CppParserOptions().EnableMacros()
+                , new CppParserOptions()
             );
         }
    }

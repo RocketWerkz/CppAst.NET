@@ -51,7 +51,6 @@ namespace CppAst
                 "-Wno-pragma-once-outside-header"
             };
             AutoSquashTypedef = true;
-            ParseMacros = false;
             ParseComments = true;
             ParseSystemIncludes = true;
             ParseTokenAttributes = false;
@@ -96,11 +95,6 @@ namespace CppAst
         public bool ParseComments { get; set; }
 
         /// <summary>
-        /// Gets or sets a boolean indicating whether to parse macros. Default is <c>false</c>.
-        /// </summary>
-        public bool ParseMacros { get; set; }
-
-        /// <summary>
         /// Gets or sets a boolean indicating whether un-named enum/struct referenced by a typedef will be renamed directly to the typedef name. Default is <c>true</c>
         /// </summary>
         public bool AutoSquashTypedef { get; set; }
@@ -119,16 +113,6 @@ namespace CppAst
         /// Gets or sets a boolean indicating whether to parse comment attributes. Default is <c>false</c>
         /// </summary>
         public bool ParseCommentAttribute { get; set; }
-
-        /// <summary>
-        /// Sets <see cref="ParseMacros"/> to <c>true</c> and return this instance.
-        /// </summary>
-        /// <returns>This instance</returns>
-        public CppParserOptions EnableMacros()
-        {
-            ParseMacros = true;
-            return this;
-        }
 
         /// <summary>
         /// Cpu Clang target. Default is <see cref="CppTargetCpu.X86"/>
@@ -180,6 +164,13 @@ namespace CppAst
             newOptions.AdditionalArguments = new List<string>(AdditionalArguments);
 
             return newOptions;
+        }
+
+        public CppParserOptions With(Action<CppParserOptions> options)
+        {
+            var clone = Clone();
+            options(clone);
+            return clone;
         }
 
         /// <summary>

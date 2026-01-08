@@ -18,7 +18,6 @@ namespace CppAst.Tests
             var options = new CppParserOptions();
             options.SystemIncludeFolders.Add(Directory.GetCurrentDirectory());
             options.ParseSystemIncludes = true;
-            options.ParseMacros = true;
             ParseAssert(@"
 #include <test_container.h>
 struct bob bb;
