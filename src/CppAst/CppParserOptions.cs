@@ -2,8 +2,6 @@
 // Licensed under the BSD-Clause 2 license.
 // See license.txt file in the project root for full license information.
 
-using System;
-using System.Collections.Generic;
 using CliWrap;
 using CliWrap.Buffered;
 
@@ -14,23 +12,6 @@ namespace CppAst
     /// </summary>
     public class CppParserOptions
     {
-        /// <summary>
-        /// Create a new instance of the native parser.
-        /// </summary>
-        public static CppParserOptions Create(CppParserKind kind)
-        {
-            var options = new CppParserOptions();
-
-            if (OperatingSystem.IsWindows())
-                options.ConfigureForWindowsMsvc();
-            else if (OperatingSystem.IsLinux())
-                options.ConfigureForLinux();
-            else if (OperatingSystem.IsMacOS())
-                options.ConfigureForMac();
-
-            return options;
-        }
-        
         /// <summary>
         /// Default constructor.
         /// </summary>
@@ -64,20 +45,32 @@ namespace CppAst
             TargetAbi = "";
         }
 
+        private bool _configured = false;
+
+        public void ConfigureForCurrentPlatform()
+        {
+            if (OperatingSystem.IsWindows())
+                ConfigureForWindowsMsvc();
+            else if (OperatingSystem.IsLinux())
+                ConfigureForLinux();
+            else if (OperatingSystem.IsMacOS())
+                ConfigureForMac();
+        }
+
         /// <summary>
         /// List of the include folders.
         /// </summary>
-        public List<string> IncludeFolders { get; private set; }
+        public List<string> IncludeFolders { get; set; }
 
         /// <summary>
         /// List of the system include folders.
         /// </summary>
-        public List<string> SystemIncludeFolders { get; private set; }
+        public List<string> SystemIncludeFolders { get; set; }
 
         /// <summary>
         /// List of the defines.
         /// </summary>
-        public List<string> Defines { get; private set; }
+        public List<string> Defines { get; set; }
 
         /// <summary>
         /// List of the additional arguments passed directly to the C++ Clang compiler.
