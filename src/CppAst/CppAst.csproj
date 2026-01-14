@@ -39,4 +39,8 @@
     </PackageReference>
     <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\src\dotNetExtensions\dotNetExtensions.csproj" />
+  </ItemGroup>
 </Project>

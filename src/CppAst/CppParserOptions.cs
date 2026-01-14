@@ -2,6 +2,7 @@
 // Licensed under the BSD-Clause 2 license.
 // See license.txt file in the project root for full license information.
 
+using Brutal.Interop;
 using CliWrap;
 using CliWrap.Buffered;
 
@@ -45,16 +46,8 @@ namespace CppAst
             TargetAbi = "";
         }
 
-        private bool _configured = false;
-
         public void ConfigureForCurrentPlatform()
         {
-            if (OperatingSystem.IsWindows())
-                ConfigureForWindowsMsvc();
-            else if (OperatingSystem.IsLinux())
-                ConfigureForLinux();
-            else if (OperatingSystem.IsMacOS())
-                ConfigureForMac();
         }
 
         /// <summary>
@@ -75,7 +68,7 @@ namespace CppAst
         /// <summary>
         /// List of the additional arguments passed directly to the C++ Clang compiler.
         /// </summary>
-        public List<string> AdditionalArguments { get; private set; }
+        public List<string> AdditionalArguments { get; set; }
 
         /// <summary>
         /// Gets or sets the parser kind. Default is <see cref="CppParserKind.Cpp"/>. This is used to select the parser to use.
@@ -142,6 +135,8 @@ namespace CppAst
         /// </summary>
         public string PostHeaderText { get; set; }
 
+        public OS? ConfiguredForPlatform { get; private set; } = null;
+
         /// <summary>
         /// Clone this instance.
         /// </summary>
@@ -172,6 +167,10 @@ namespace CppAst
         /// <returns>This instance</returns>
         public CppParserOptions ConfigureForWindowsMsvc(CppTargetCpu targetCpu = CppTargetCpu.X86, CppVisualStudioVersion vsVersion = CppVisualStudioVersion.VS2022)
         {
+            if (ConfiguredForPlatform != null)
+                throw new InvalidOperationException($"This options has already been configured for {ConfiguredForPlatform}.");
+            ConfiguredForPlatform = OS.Windows;
+            
             // 1920
             var highVersion = ((int)vsVersion) / 100;  // => 19
             var lowVersion = ((int)vsVersion) % 100;   // => 20
@@ -218,6 +217,10 @@ namespace CppAst
         
         public CppParserOptions ConfigureForLinux()
         {
+            if (ConfiguredForPlatform != null)
+                throw new InvalidOperationException($"This options has already been configured for {ConfiguredForPlatform}.");
+            ConfiguredForPlatform = OS.Linux;
+            
             // TODO: implement properly for Linux
             TargetCpu = CppTargetCpu.X86_64;
             TargetVendor = "linux";
@@ -227,6 +230,10 @@ namespace CppAst
 
         public CppParserOptions ConfigureForMac()
         {
+            if (ConfiguredForPlatform != null)
+                throw new InvalidOperationException($"This options has already been configured for {ConfiguredForPlatform}.");
+            ConfiguredForPlatform = OS.Mac;
+            
             // TODO: infer the triple based on the clang output
             TargetCpu = CppTargetCpu.ARM64;
             TargetVendor = "apple";
@@ -276,6 +283,24 @@ namespace CppAst
             File.Delete(tempFile);
 
             return this;
+        }
+
+        public void ConfigureForPlatform(OS platform)
+        {
+            switch (platform.Resolve())
+            {
+                case OS.Mac:
+                    ConfigureForMac();
+                    break;
+                case OS.Windows:
+                    ConfigureForWindowsMsvc();
+                    break;
+                case OS.Linux:
+                    ConfigureForLinux();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(platform), platform, null);
+            }
         }
     }
 }
