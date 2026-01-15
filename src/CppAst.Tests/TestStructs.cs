@@ -1,3 +1,4 @@
+using Brutal.Interop;
 using NUnit.Framework;
 
 namespace CppAst.Tests
@@ -309,6 +310,22 @@ struct HelloWorld
                     }
                 }
             );
+        }
+        
+        [Test]
+        public void TestDeclType()
+        {
+            var options = new CppParserOptions();
+            options.ConfigureForPlatform(OS.Current);
+            
+            ParseAssert(@"
+#include <cstddef>
+",
+                compilation =>
+                {
+                    Assert.False(compilation.HasErrors);
+                },
+                options);
         }
     }
 }
