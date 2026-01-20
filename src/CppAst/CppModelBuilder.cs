@@ -2274,8 +2274,20 @@ namespace CppAst
                         var templateParameters = ParseTemplateSpecializedArguments(cursor, type, new CXClientData((IntPtr)data));
                         if (templateParameters != null)
                         {
-                            cppUnexposedType.TemplateParameters.AddRange(templateParameters);
+                            foreach (var param in templateParameters)
+                            {
+                                switch (param)
+                                {
+                                    case CppTemplateParameterType paramType:
+                                        cppUnexposedType.TemplateParameters.Add(new CppTemplateParameterType(paramType.Name));
+                                        break;
+                                    case CppTemplateParameterNonType nonType:
+                                        cppUnexposedType.TemplateParameters.Add(new CppTemplateParameterNonType(nonType.Name, nonType.NoneTemplateType));
+                                        break;
+                                }
+                            }
                         }
+
                         return cppUnexposedType;
                     }
 
