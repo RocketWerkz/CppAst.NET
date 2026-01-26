@@ -46,10 +46,6 @@ namespace CppAst
             TargetAbi = "";
         }
 
-        public void ConfigureForCurrentPlatform()
-        {
-        }
-
         /// <summary>
         /// List of the include folders.
         /// </summary>
