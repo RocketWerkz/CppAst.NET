@@ -531,13 +531,14 @@ namespace CppAst
                         // Might not be always correct (with alignment rules),
                         // but not sure how to recover the offset without recalculating the entire offsets
                         // BF: disregard the above comment? as we are now aligning using the anonymous struct's AlignOf...
-                        var offset = 0L;
+                        var bitOffset = 0L;
                         var cppClassContainer = containerContext.Container as CppClass;
                         if (cppClassContainer is object && cppClassContainer.Fields.Count > 0)
                         {
                             var lastField = cppClassContainer.Fields[cppClassContainer.Fields.Count - 1];
-                            offset = (int)lastField.Offset + lastField.Type.SizeOf;
+                            var offset = lastField.Offset + lastField.Type.SizeOf;
                             offset = Align(offset, cppClass.AlignOf);
+                            bitOffset = offset * 8;
 
                             static long Align(long offset, long alignment)
                             {
@@ -551,7 +552,7 @@ namespace CppAst
                             Visibility = containerContext.CurrentVisibility,
                             StorageQualifier = GetStorageQualifier(cursor),
                             IsAnonymous = true,
-                            Offset = offset,
+                            BitOffset = bitOffset,
                         };
                         ParseAttributes(cursor, cppField, true);
                         containerContext.DeclarationContainer.Fields.Add(cppField);
@@ -1154,7 +1155,7 @@ namespace CppAst
                 cppField = previousField;
                 cppField.Name = fieldName;
                 cppField.Type = type;
-                cppField.Offset = cursor.OffsetOfField / 8;
+                cppField.BitOffset = cursor.OffsetOfField;
             }
             else
             {
@@ -1164,7 +1165,7 @@ namespace CppAst
                     StorageQualifier = GetStorageQualifier(cursor),
                     IsBitField = cursor.IsBitField,
                     BitFieldWidth = cursor.FieldDeclBitWidth,
-                    Offset = cursor.OffsetOfField / 8,
+                    BitOffset = cursor.OffsetOfField,
                 };
                 containerContext.DeclarationContainer.Fields.Add(cppField);
                 ParseAttributes(cursor, cppField, true);
@@ -1188,7 +1189,7 @@ namespace CppAst
                 Visibility = GetVisibility(cursor.CXXAccessSpecifier),
                 StorageQualifier = GetStorageQualifier(cursor),
                 IsAnonymous = true,
-                Offset = cursor.OffsetOfField / 8,
+                BitOffset = cursor.OffsetOfField,
             };
             containerContext.DeclarationContainer.Fields.Add(cppField);
             ParseAttributes(cursor, cppField, true);

@@ -310,5 +310,46 @@ struct HelloWorld
                 }
             );
         }
+
+        [Test]
+        public void TestBitOffsets()
+        {
+            ParseAssert(@"
+struct NormalFields
+{
+    int a;
+    short b;
+    float c;
+};
+
+struct Bitfields
+{
+    int a : 1;
+    int b : 2;
+    int c : 3;
+};
+",
+                compilation =>
+                {
+                    Assert.False(compilation.HasErrors);
+
+                    void Test(int classIndex, int fieldIndex, int expectedOffset, int expectedBitOffset)
+                    {
+                        var cppStruct = compilation.Classes[classIndex];
+                        var field = cppStruct.Fields[fieldIndex];
+                        Assert.AreEqual(expectedOffset, field.Offset);
+                        Assert.AreEqual(expectedBitOffset, field.BitOffset);
+                    }
+
+                    Test(0, 0, 0, 0);
+                    Test(0, 1, 4, 32);
+                    Test(0, 2, 8, 64);
+
+                    Test(1, 0, 0, 0);
+                    Test(1, 1, 0, 1);
+                    Test(1, 2, 0, 3);
+                }
+            );
+        }
     }
 }
