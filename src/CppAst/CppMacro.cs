@@ -8,7 +8,7 @@ using System.Text;
 namespace CppAst
 {
     /// <summary>
-    /// A C++ Macro, only valid if the parser is initialized with <see cref="CppParserOptions.ParseMacros"/>
+    /// A C++ Macro
     /// </summary>
     public class CppMacro : CppElement, ICppMember
     {
@@ -30,7 +30,7 @@ namespace CppAst
         /// <summary>
         /// Gets or sets the parameters of this macro (e.g `param1` and `param2` in `#define MY_MACRO(param1, param2)`)
         /// </summary>
-        public List<string> Parameters { get; set; }
+        public List<string>? Parameters { get; set; }
 
         /// <summary>
         /// Gets or sets the tokens of the value of the macro. The full string of the tokens is accessible via the <see cref="Value"/> property.
@@ -43,7 +43,7 @@ namespace CppAst
         /// <summary>
         /// Gets a textual representation of the token values of this macro.
         /// </summary>
-        public string Value { get; set; }
+        public string? Value { get; set; }
 
         /// <summary>
         /// Call this method to update the <see cref="Value"/> property from the list of <see cref="Tokens"/>

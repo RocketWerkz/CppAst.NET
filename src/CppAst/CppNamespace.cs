@@ -26,7 +26,6 @@ namespace CppAst
             Typedefs = new CppContainerList<CppTypedef>(this);
             Namespaces = new CppContainerList<CppNamespace>(this);
             Attributes = new List<CppAttribute>();
-            TokenAttributes = new List<CppAttribute>();
             Properties = new CppContainerList<CppProperty>(this);
         }
 
@@ -63,8 +62,6 @@ namespace CppAst
 
         /// <inheritdoc />
         public List<CppAttribute> Attributes { get; }
-        [Obsolete("TokenAttributes is deprecated. please use system attributes and annotate attributes")]
-        public List<CppAttribute> TokenAttributes { get; }
 
         public MetaAttributeMap MetaAttributes { get; private set; } = new MetaAttributeMap();
 

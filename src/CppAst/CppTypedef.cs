@@ -22,14 +22,10 @@ namespace CppAst
             Name = name ?? throw new ArgumentNullException(nameof(name));
             ElementType = type;
             Attributes = new List<CppAttribute>();
-            TokenAttributes = new List<CppAttribute>();
             MetaAttributes = new MetaAttributeMap();
         }
 
         public List<CppAttribute> Attributes { get; }
-
-        [Obsolete("TokenAttributes is deprecated. please use system attributes and annotate attributes")]
-        public List<CppAttribute> TokenAttributes { get; }
 
         public MetaAttributeMap MetaAttributes { get; private set; }
         
@@ -69,7 +65,7 @@ namespace CppAst
         }
 
         /// <inheritdoc />
-        public override CppType GetCanonicalType()
+        public override CppType? GetCanonicalType()
         {
             return ElementType.GetCanonicalType();
         }

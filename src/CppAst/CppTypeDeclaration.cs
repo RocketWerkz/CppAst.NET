@@ -17,7 +17,7 @@ namespace CppAst
         }
 
         /// <inheritdoc />
-        public CppComment Comment { get; set; }
+        public CppComment? Comment { get; set; }
 
         /// <inheritdoc />
         public virtual IEnumerable<ICppDeclaration> Children()

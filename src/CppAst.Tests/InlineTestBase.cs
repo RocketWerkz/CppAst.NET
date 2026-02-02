@@ -6,7 +6,7 @@ namespace CppAst.Tests
 {
     public class InlineTestBase
     {
-        public void ParseAssert(string text, Action<CppCompilation> assertCompilation, CppParserOptions options = null)
+        public void ParseAssert(string text, Action<CppCompilation> assertCompilation, CppParserOptions? options = null)
         {
             if (assertCompilation == null) throw new ArgumentNullException(nameof(assertCompilation));
 

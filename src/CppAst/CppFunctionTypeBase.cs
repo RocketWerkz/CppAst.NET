@@ -16,6 +16,7 @@ namespace CppAst
         /// <summary>
         /// Constructor of a function type.
         /// </summary>
+        /// <param name="kind">Kind of this function type.</param>
         /// <param name="returnType">Return type of this function type.</param>
         protected CppFunctionTypeBase(CppTypeKind kind, CppType returnType) : base(kind)
         {

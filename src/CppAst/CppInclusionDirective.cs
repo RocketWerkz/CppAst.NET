@@ -12,7 +12,7 @@ public class CppInclusionDirective : CppElement
     /// <summary>
     /// Gets or sets the file name being included.
     /// </summary>
-    public string FileName { get; set; }
+    public string? FileName { get; set; }
 
     /// <inheritdoc />
     public override string ToString() => FileName ?? "<empty>";

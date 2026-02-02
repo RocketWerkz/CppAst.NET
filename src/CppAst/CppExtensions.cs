@@ -25,7 +25,7 @@ namespace CppAst
         /// </summary>
         /// <param name="type">The type</param>
         /// <returns>The display name</returns>
-        public static string GetDisplayName(this CppType type)
+        public static string? GetDisplayName(this CppType type)
         {
             if (type is ICppMember member) return member.Name;
             return type.ToString();

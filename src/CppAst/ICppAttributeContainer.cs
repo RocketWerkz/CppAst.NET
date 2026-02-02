@@ -14,10 +14,7 @@ namespace CppAst
         /// <summary>
         /// Gets the attributes from element.
         /// </summary>
-        List<CppAttribute> Attributes { get; }
-
-        [Obsolete("TokenAttributes is deprecated. please use system attributes and annotate attributes")]
-        List<CppAttribute> TokenAttributes { get; }
+        List<CppAttribute>? Attributes { get; }
 
         MetaAttributeMap MetaAttributes { get; }
     }

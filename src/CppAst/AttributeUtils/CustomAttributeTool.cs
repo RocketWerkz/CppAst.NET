@@ -7,8 +7,8 @@ namespace CppAst
 {
     public class MetaAttribute
     {
-        public string FeatureName;
-        public Dictionary<string, object> ArgumentMap = new Dictionary<string, object>();
+        public string? FeatureName;
+        public Dictionary<string, object?> ArgumentMap = new Dictionary<string, object?>();
 
         public override string ToString()
         {
@@ -24,10 +24,24 @@ namespace CppAst
 
         public bool QueryKeyIsTrue(string key)
         {
-            return ArgumentMap.ContainsKey(key) && (((ArgumentMap[key] is bool) && (bool)ArgumentMap[key]) || ((ArgumentMap[key] is string && (string)ArgumentMap[key] == "true")));
+            if (!ArgumentMap.ContainsKey(key)) return false;
+            
+            if (ArgumentMap[key] is bool)
+            {
+                var value = (bool?)ArgumentMap[key];
+                return value != null && value.Value;
+            }
+            
+            if (ArgumentMap[key] is string)
+            {
+                var value = (string?)ArgumentMap[key];
+                return value is "true";
+            }
+            
+            return false;
         }
         
-        public bool QueryKeysAreTrue(List<string> keys)
+        public bool QueryKeysAreTrue(List<string>? keys)
         {
             if (keys == null || !keys.Any())
             {
@@ -58,7 +72,7 @@ namespace CppAst
             }
         }
         
-        public object QueryArgument(string argName)
+        public object? QueryArgument(string argName)
         {
             if (MetaList.Count == 0) return null;
 
@@ -107,7 +121,7 @@ namespace CppAst
             return defaultVal;
         }
 
-        public string QueryArgumentAsString(string argName, string defaultVal)
+        public string? QueryArgumentAsString(string argName, string defaultVal)
         {
             var obj = QueryArgument(argName);
             if (obj != null)
@@ -155,7 +169,7 @@ namespace CppAst
             return retList;
         }
         
-        public static MetaAttribute ParseMetaStringFor(string meta, string needLeaderWord, out string errorMessage)
+        public static MetaAttribute? ParseMetaStringFor(string meta, string needLeaderWord, out string errorMessage)
         {
             string feature = "", arguments = "";
             errorMessage = "";
@@ -191,7 +205,7 @@ namespace CppAst
             }
         }
 
-        public static MetaAttribute ParseMetaStringFor(string meta, out string errorMessage)
+        public static MetaAttribute? ParseMetaStringFor(string meta, out string errorMessage)
         {
             errorMessage = "";
             MetaAttribute attribute = new MetaAttribute();

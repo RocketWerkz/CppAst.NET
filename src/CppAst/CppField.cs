@@ -18,7 +18,6 @@ namespace CppAst
             Type = type ?? throw new ArgumentNullException(nameof(type));
             Name = name;
             Attributes = new List<CppAttribute>();
-            TokenAttributes = new List<CppAttribute>();
         }
 
         /// <inheritdoc />
@@ -32,10 +31,7 @@ namespace CppAst
         /// <summary>
         /// Gets attached attributes. Might be null.
         /// </summary>
-        public List<CppAttribute> Attributes { get; }
-
-        [Obsolete("TokenAttributes is deprecated. please use system attributes and annotate attributes")]
-        public List<CppAttribute> TokenAttributes { get; }
+        public List<CppAttribute>? Attributes { get; }
 
         public MetaAttributeMap MetaAttributes { get; private set; } = new MetaAttributeMap();
 
@@ -55,12 +51,12 @@ namespace CppAst
         /// <summary>
         /// Gets the associated init value (either an integer or a string...)
         /// </summary>
-        public CppValue InitValue { get; set; }
+        public CppValue? InitValue { get; set; }
 
         /// <summary>
         /// Gets the associated init value as an expression.
         /// </summary>
-        public CppExpression InitExpression { get; set; }
+        public CppExpression? InitExpression { get; set; }
 
         /// <summary>
         /// Gets or sets a boolean indicating that this field is a bit field. See <see cref="BitFieldWidth"/> to get the width of this field if <see cref="IsBitField"/> is <c>true</c>

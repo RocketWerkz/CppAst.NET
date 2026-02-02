@@ -3,6 +3,7 @@
 // See license.txt file in the project root for full license information.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Xml.Linq;
 
 namespace CppAst
@@ -28,7 +29,7 @@ namespace CppAst
             IsSpecializedArgument = true;
         }
 
-		public CppTemplateArgument(CppType sourceParam, string unknownStr) : base(CppTypeKind.TemplateArgumentType)
+		public CppTemplateArgument(CppType sourceParam, string? unknownStr) : base(CppTypeKind.TemplateArgumentType)
         {
 			SourceParam = sourceParam ?? throw new ArgumentNullException(nameof(sourceParam));
             ArgAsUnknown = unknownStr;
@@ -37,12 +38,12 @@ namespace CppAst
         }
 
         public CppTemplateArgumentKind ArgKind { get; }
+        
+        public CppType? ArgAsType { get; }
 
-        public CppType ArgAsType { get; }
+        public long? ArgAsInteger { get; }
 
-        public long ArgAsInteger { get; }
-
-        public string ArgAsUnknown { get; }
+        public string? ArgAsUnknown { get; }
 
         public string ArgString
         {
@@ -51,11 +52,11 @@ namespace CppAst
                 switch (ArgKind)
                 {
                     case CppTemplateArgumentKind.AsType:
-                        return ArgAsType.FullName;
+                        return ArgAsType!.FullName ?? throw new InvalidOperationException("Invalid type value");
                     case CppTemplateArgumentKind.AsInteger:
-                        return ArgAsInteger.ToString();
+                        return ArgAsInteger.ToString() ?? throw new InvalidOperationException("Invalid integer value");
                     case CppTemplateArgumentKind.Unknown:
-                        return ArgAsUnknown;
+                        return ArgAsUnknown!;
                     default:
                         return "?";
                 }

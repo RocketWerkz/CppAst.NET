@@ -21,7 +21,7 @@ namespace CppAst
         /// <summary>
         /// Gets or sets the scope of this attribute
         /// </summary>
-        public string Scope { get; set; }
+        public string? Scope { get; set; }
 
         /// <summary>
         /// Gets the attribute name.
@@ -31,7 +31,7 @@ namespace CppAst
         /// <summary>
         /// Gets the attribute arguments
         /// </summary>
-        public string Arguments { get; set; }
+        public string? Arguments { get; set; }
 
         /// <summary>
         /// Gets a boolean indicating whether this attribute is variadic

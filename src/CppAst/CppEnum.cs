@@ -22,7 +22,6 @@ namespace CppAst
             Name = name;
             Items = new CppContainerList<CppEnumItem>(this);
             Attributes = new List<CppAttribute>();
-            TokenAttributes = new List<CppAttribute>();
         }
 
         /// <inheritdoc />
@@ -56,7 +55,7 @@ namespace CppAst
         /// <summary>
         /// Gets or sets the underlying integer type of this enum.
         /// </summary>
-        public CppType IntegerType { get; set; }
+        public CppType? IntegerType { get; set; }
 
         /// <summary>
         /// Gets the definition of the enum items.
@@ -69,9 +68,6 @@ namespace CppAst
         /// Gets the list of attached attributes.
         /// </summary>
         public List<CppAttribute> Attributes { get; }
-        [Obsolete("TokenAttributes is deprecated. please use system attributes and annotate attributes")]
-        public List<CppAttribute> TokenAttributes { get; }
-
         public MetaAttributeMap MetaAttributes { get; private set; } = new MetaAttributeMap();
 
         /// <inheritdoc />
@@ -82,7 +78,7 @@ namespace CppAst
         }
 
         /// <inheritdoc />
-        public override CppType GetCanonicalType() => IntegerType;
+        public override CppType? GetCanonicalType() => IntegerType;
 
         /// <inheritdoc />
         public override IEnumerable<ICppDeclaration> Children() => Items;

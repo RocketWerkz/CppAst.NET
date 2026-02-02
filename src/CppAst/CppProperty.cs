@@ -23,10 +23,7 @@ public sealed class CppProperty : CppDeclaration, ICppMember, ICppAttributeConta
     /// <summary>
     /// Gets attached attributes. Might be null.
     /// </summary>
-    public List<CppAttribute> Attributes { get; }
-
-    [Obsolete("TokenAttributes is deprecated. please use system attributes and annotate attributes")]
-    public List<CppAttribute> TokenAttributes { get; } = new();
+    public List<CppAttribute>? Attributes { get; }
 
     public MetaAttributeMap MetaAttributes { get; private set; } = new MetaAttributeMap();
 
@@ -41,22 +38,22 @@ public sealed class CppProperty : CppDeclaration, ICppMember, ICppAttributeConta
     /// <summary>
     /// Gets or sets the name of the getter method.
     /// </summary>
-    internal string GetterName { get; set; }
+    internal string? GetterName { get; set; }
     
     /// <summary>
     /// Gets or sets the getter method.
     /// </summary>
-    public CppFunction Getter { get; set; }
+    public CppFunction? Getter { get; set; }
     
     /// <summary>
     /// Gets or sets the name of the setter method.
     /// </summary>
-    internal string SetterName { get; set; }
+    internal string? SetterName { get; set; }
     
     /// <summary>
     /// Gets or sets the setter method.
     /// </summary>
-    public CppFunction Setter { get; set; }
+    public CppFunction? Setter { get; set; }
     
     /// <inheritdoc />
     public override string ToString()

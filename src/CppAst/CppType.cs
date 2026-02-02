@@ -29,12 +29,12 @@ namespace CppAst
         /// Gets the canonical type of this type instance.
         /// </summary>
         /// <returns>A canonical type of this type instance</returns>
-        public abstract CppType GetCanonicalType();
+        public abstract CppType? GetCanonicalType();
 
         /// <summary>
         /// We can use this name in exporter to use this type.
         /// </summary>
-        public virtual string FullName
+        public virtual string? FullName
         {
             get
             {

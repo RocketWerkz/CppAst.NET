@@ -30,7 +30,6 @@ namespace CppAst
             Typedefs = new CppContainerList<CppTypedef>(this);
             TemplateParameters = new CppContainerList<CppType>(this);
             Attributes = new List<CppAttribute>();
-            TokenAttributes = new List<CppAttribute>();
             ObjCImplementedProtocols = new List<CppClass>();
             Properties = new CppContainerList<CppProperty>(this);
             ObjCCategories = new List<CppClass>();
@@ -50,7 +49,7 @@ namespace CppAst
         /// <summary>
         /// Gets or sets the target of the Objective-C category. Null if this class is not an <see cref="CppClassKind.ObjCInterfaceCategory"/>.
         /// </summary>
-        public CppClass ObjCCategoryTargetClass { get; set; }
+        public CppClass? ObjCCategoryTargetClass { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the Objective-C category. Empty if this class is not an <see cref="CppClassKind.ObjCInterfaceCategory"/>
@@ -116,9 +115,6 @@ namespace CppAst
         /// <inheritdoc />
         public List<CppAttribute> Attributes { get; }
 
-        [Obsolete("TokenAttributes is deprecated. please use system attributes and annotate attributes")]
-        public List<CppAttribute> TokenAttributes { get; }
-
         public MetaAttributeMap MetaAttributes { get; private set; } = new MetaAttributeMap();
 
         /// <summary>
@@ -182,7 +178,7 @@ namespace CppAst
         /// <summary>
         /// Gets the specialized class template of this instance.
         /// </summary>
-        public CppClass SpecializedTemplate { get; set; }
+        public CppClass? SpecializedTemplate { get; set; }
 
 
         public bool IsEmbeded => Parent is CppClass;

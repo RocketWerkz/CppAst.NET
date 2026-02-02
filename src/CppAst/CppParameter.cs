@@ -35,12 +35,12 @@ namespace CppAst
         /// <summary>
         /// Gets or sets the default value.
         /// </summary>
-        public CppValue InitValue { get; set; }
+        public CppValue? InitValue { get; set; }
 
         /// <summary>
         /// Gets or sets the default value as an expression.
         /// </summary>
-        public CppExpression InitExpression { get; set; }
+        public CppExpression? InitExpression { get; set; }
 
         public override string ToString()
         {

@@ -31,7 +31,6 @@ namespace CppAst
             Typedefs = new CppContainerList<CppTypedef>(this);
             Namespaces = new CppContainerList<CppNamespace>(this);
             Attributes = new List<CppAttribute>();
-            TokenAttributes = new List<CppAttribute>();
             Properties = new CppContainerList<CppProperty>(this);
             InclusionDirectives = new CppContainerList<CppInclusionDirective>(this);
         }
@@ -39,9 +38,6 @@ namespace CppAst
         /// <summary>
         /// Gets the macros defines for this container.
         /// </summary>
-        /// <remarks>
-        /// Macros are only available if <see cref="CppParserOptions.ParseMacros"/> is <c>true</c>
-        /// </remarks>
         public List<CppMacro> Macros { get; }
 
         /// <inheritdoc />
@@ -68,9 +64,6 @@ namespace CppAst
         /// <inheritdoc />
         public List<CppAttribute> Attributes { get; }
 
-        [Obsolete("TokenAttributes is deprecated. please use system attributes and annotate attributes")]
-        public List<CppAttribute> TokenAttributes { get; }
-
         public MetaAttributeMap MetaAttributes { get; private set; } = new MetaAttributeMap();
 
         /// <summary>
@@ -94,16 +87,15 @@ namespace CppAst
             return FindByName(this, name);
         }
 
-        private CppElement SearchForChild(CppElement parent, string child_name)
+        private CppElement? SearchForChild(CppElement? parent, string child_name)
         {
-            ICppDeclarationContainer container = null;
-            if(parent is CppNamespace)
+            ICppDeclarationContainer? container = null;
+            if(parent is CppNamespace ns1)
             {
-                var ns = parent as CppNamespace;
-                var n = ns.Namespaces.FirstOrDefault(x => x.Name == child_name);
+                var n = ns1.Namespaces.FirstOrDefault(x => x.Name == child_name);
                 if (n != null) return n;
 
-                container = ns;
+                container = ns1;
             }
             else if(parent is CppClass)
             {
@@ -126,9 +118,8 @@ namespace CppAst
             }
 
             //Not found, try to find in inline namespace.
-            if(parent is CppNamespace)
+            if(parent is CppNamespace ns)
             {
-                var ns = parent as CppNamespace;
                 foreach(var sn in ns.Namespaces)
                 {
                     if (sn.IsInlineNamespace)
@@ -148,12 +139,12 @@ namespace CppAst
         /// </summary>
         /// <param name="name">Name of the element to find</param>
         /// <returns>The CppElement found or null if not found</returns>
-		public CppElement FindByFullName(string name)
+		public CppElement? FindByFullName(string name)
         {
             var arr = name.Split(new string[] { "::" }, StringSplitOptions.RemoveEmptyEntries);
             if(arr.Length == 0) return null;
 
-            CppElement elem = null;
+            CppElement? elem = null;
             for(int i = 0; i < arr.Length; i++)
             {
                 if (i == 0)
@@ -175,9 +166,9 @@ namespace CppAst
         /// </summary>
         /// <param name="name">Name of the element to find</param>
         /// <returns>The CppElement found or null if not found</returns>
-        public TCppElement FindByFullName<TCppElement>(string name) where TCppElement : CppElement
+        public TCppElement? FindByFullName<TCppElement>(string name) where TCppElement : CppElement
         {
-            return (TCppElement)FindByFullName(name);
+            return FindByFullName(name) as TCppElement;
         }
 
         /// <summary>
@@ -319,7 +310,7 @@ namespace CppAst
         }
 
         /// <inheritdoc />
-        public bool Equals(T x, T y)
+        public bool Equals(T? x, T? y)
         {
             return ReferenceEquals(x, y);
         }

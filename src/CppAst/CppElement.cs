@@ -20,9 +20,9 @@ namespace CppAst
         /// <summary>
         /// Gets or sets the parent container of this element. Might be null.
         /// </summary>
-        public ICppContainer Parent { get; internal set; }
+        public ICppContainer? Parent { get; internal set; }
 
-        public sealed override bool Equals(object obj) => ReferenceEquals(this, obj);
+        public sealed override bool Equals(object? obj) => ReferenceEquals(this, obj);
 
         public sealed override int GetHashCode() => RuntimeHelpers.GetHashCode(this);
 
@@ -34,16 +34,13 @@ namespace CppAst
                 var p = Parent;
                 while (p != null)
                 {
-                    if (p is CppClass)
+                    if (p is CppClass cpp)
                     {
-                        var cpp = p as CppClass;
                         tmpname = $"{cpp.Name}::{tmpname}";
                         p = cpp.Parent;
                     }
-                    else if (p is CppNamespace)
+                    else if (p is CppNamespace ns)
                     {
-                        var ns = p as CppNamespace;
-
                         //Just ignore inline namespace
                         if (!ns.IsInlineNamespace)
                         {

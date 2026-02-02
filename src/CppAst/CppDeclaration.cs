@@ -12,6 +12,6 @@ namespace CppAst
         /// <summary>
         /// Gets or sets the comment attached to this element. Might be null.
         /// </summary>
-        public CppComment Comment { get; set; }
+        public CppComment? Comment { get; set; }
     }
 }

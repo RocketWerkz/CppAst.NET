@@ -46,7 +46,7 @@ namespace CppAst
         /// <summary>
         /// Gets a list of children. Might be null.
         /// </summary>
-        public List<CppComment> Children { get; set; }
+        public List<CppComment>? Children { get; set; }
 
         protected internal abstract void ToString(StringBuilder builder);
 
@@ -87,7 +87,7 @@ namespace CppAst
             Arguments = new List<string>();
         }
 
-        public string CommandName { get; set; }
+        public string? CommandName { get; set; }
 
         public List<string> Arguments { get; }
 
@@ -195,7 +195,7 @@ namespace CppAst
         /// <summary>
         /// Gets or sets the name of the parameter.
         /// </summary>
-        public string ParamName { get; set; }
+        public string? ParamName { get; set; }
 
         /// <summary>
         /// Gets or sets a boolean indicating if the <see cref="ParamIndex"/> is valid.
@@ -239,7 +239,7 @@ namespace CppAst
         /// <summary>
         /// Gets or sets the name of the parameter.
         /// </summary>
-        public string ParamName { get; set; }
+        public string? ParamName { get; set; }
 
         /// <summary>
         /// Depth or this parameter.
@@ -338,7 +338,7 @@ namespace CppAst
         {
         }
 
-        public string Text { get; set; }
+        public string? Text { get; set; }
 
         protected internal override void ToString(StringBuilder builder)
         {
@@ -381,7 +381,7 @@ namespace CppAst
         {
         }
 
-        public string TagName { get; set; }
+        public string? TagName { get; set; }
 
         protected internal abstract override void ToString(StringBuilder builder);
     }

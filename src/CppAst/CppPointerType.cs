@@ -29,8 +29,11 @@ namespace CppAst
         /// <inheritdoc />
         public override CppType GetCanonicalType()
         {
-            var elementTypeCanonical = ElementType.GetCanonicalType();
+            var elementTypeCanonical = ElementType.GetCanonicalType()
+                ?? throw new InvalidOperationException("Cannot get the canonical type of a null element type");
+            
             if (ReferenceEquals(elementTypeCanonical, ElementType)) return this;
+            
             return new CppPointerType(elementTypeCanonical);
         }
     }

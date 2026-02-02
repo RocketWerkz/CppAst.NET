@@ -32,7 +32,7 @@ DEFINE_GUID(IID_ID3D11DeviceChild,0x1841e5c8,0x16b0,0x489b,0xbc,0xc8,0x44,0xcf,0
                     Assert.NotNull(cppField.InitExpression);
                     Assert.IsInstanceOf<CppInitListExpression>(cppField.InitExpression);
 
-                    var toStr = cppField.InitExpression.ToString();
+                    var toStr = cppField.InitExpression?.ToString();
 
                     Assert.AreEqual("{0x1841e5c8, 0x16b0, 0x489b, {0xbc, 0xc8, 0x44, 0xcf, 0xb0, 0xd5, 0xde, 0xae}}", toStr);
                 },
@@ -57,7 +57,7 @@ const int x = (0 + 1) << 2;
                 Assert.NotNull(cppField.InitExpression);
                 Assert.IsInstanceOf<CppBinaryExpression>(cppField.InitExpression);
 
-                Assert.AreEqual("(0 + 1) << 2", cppField.InitExpression.ToString());
+                Assert.AreEqual("(0 + 1) << 2", cppField.InitExpression?.ToString());
             });
         }
 

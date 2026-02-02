@@ -23,7 +23,6 @@ namespace CppAst
             Parameters = new CppContainerList<CppParameter>(this);
             TemplateParameters = new CppContainerList<CppType>(this);
             Attributes = new List<CppAttribute>();
-            TokenAttributes = new List<CppAttribute>();
         }
 
         /// <inheritdoc />
@@ -38,9 +37,6 @@ namespace CppAst
         /// Gets the attached attributes.
         /// </summary>
         public List<CppAttribute> Attributes { get; }
-
-        [Obsolete("TokenAttributes is deprecated. please use system attributes and annotate attributes")]
-        public List<CppAttribute> TokenAttributes { get; }
 
         public MetaAttributeMap MetaAttributes { get;} = new MetaAttributeMap();
 
@@ -57,7 +53,7 @@ namespace CppAst
         /// <summary>
         /// Gets or sets the return type.
         /// </summary>
-        public CppType ReturnType { get; set; }
+        public CppType? ReturnType { get; set; }
 
         /// <summary>
         /// Gets or sets a boolean indicating whether this method is a constructor method.

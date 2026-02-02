@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Text;
 using ClangSharp;
@@ -14,7 +15,7 @@ namespace CppAst
 {
     static internal unsafe class CppTokenUtil
     {
-        public static void ParseCursorAttributs(CppGlobalDeclarationContainer globalContainer, CXCursor cursor, ref List<CppAttribute> attributes)
+        public static void ParseCursorAttributs(CppGlobalDeclarationContainer globalContainer, CXCursor cursor, ref List<CppAttribute>? attributes)
         {
             var tokenizer = new AttributeTokenizer(cursor);
             var tokenIt = new TokenIterator(tokenizer);
@@ -32,7 +33,7 @@ namespace CppAst
 
                 // If we have a keyword, try to skip it and process following elements
                 // for example attribute put right after a struct __declspec(uuid("...")) Test {...}
-                if (tokenIt.Peek().Kind == CppTokenKind.Keyword)
+                if (tokenIt.Peek() is { Kind: CppTokenKind.Keyword })
                 {
                     tokenIt.Next();
                     continue;
@@ -42,7 +43,7 @@ namespace CppAst
         }
 
 
-        public static void ParseFunctionAttributes(CppGlobalDeclarationContainer globalContainer, CXCursor cursor, string functionName, ref List<CppAttribute> attributes)
+        public static void ParseFunctionAttributes(CppGlobalDeclarationContainer globalContainer, CXCursor cursor, string functionName, ref List<CppAttribute>? attributes)
         {
             // TODO: This function is not 100% correct when parsing tokens up to the function name
             // we assume to find the function name immediately followed by a `(`
@@ -115,7 +116,7 @@ namespace CppAst
         }
 
 
-        public static void ParseAttributesInRange(CppGlobalDeclarationContainer globalContainer, CXTranslationUnit tu, CXSourceRange range, ref List<CppAttribute> collectAttributes)
+        public static void ParseAttributesInRange(CppGlobalDeclarationContainer globalContainer, CXTranslationUnit tu, CXSourceRange range, ref List<CppAttribute>? collectAttributes)
         {
             var tokenizer = new AttributeTokenizer(tu, range);
             var tokenIt = new TokenIterator(tokenizer);
@@ -141,7 +142,7 @@ namespace CppAst
 
                 // If we have a keyword, try to skip it and process following elements
                 // for example attribute put right after a struct __declspec(uuid("...")) Test {...}
-                if (tokenIt.Peek().Kind == CppTokenKind.Keyword)
+                if (tokenIt.Peek() is { Kind: CppTokenKind.Keyword })
                 {
                     tokenIt.Next();
                     continue;
@@ -172,6 +173,7 @@ namespace CppAst
                 return cntOffset;
             };
 
+            /*
             int ToLineStart(ReadOnlySpan<byte> cnt, int cntOffset)
             {
                 for (int i = cntOffset; i >= 0; i--)
@@ -184,6 +186,7 @@ namespace CppAst
                 }
                 return 0;
             };
+            */
 
             bool IsAttributeEnd(ReadOnlySpan<byte> cnt, int cntOffset)
             {
@@ -227,6 +230,7 @@ namespace CppAst
                 return cntOffset;
             };
 
+            /*
             string QueryLineContent(ReadOnlySpan<byte> cnt, int startOffset, int endOffset)
             {
                 StringBuilder sb = new StringBuilder();
@@ -236,6 +240,7 @@ namespace CppAst
                 }
                 return sb.ToString();
             };
+            */
 
             CXSourceLocation location = cursor.Extent.Start;
             location.GetFileLocation(out var file, out var line, out var column, out var offset);
@@ -335,7 +340,7 @@ namespace CppAst
                 return false;
             }
 
-            public CppToken PreviousToken()
+            public CppToken? PreviousToken()
             {
                 if (_index > 0)
                 {
@@ -390,7 +395,7 @@ namespace CppAst
                 return false;
             }
 
-            public bool Next(out CppToken token)
+            public bool Next(out CppToken? token)
             {
                 token = null;
                 if (_index < _tokens.Count)
@@ -414,7 +419,7 @@ namespace CppAst
                 return false;
             }
 
-            public CppToken Peek()
+            public CppToken? Peek()
             {
                 if (_index < _tokens.Count)
                 {
@@ -423,7 +428,7 @@ namespace CppAst
                 return null;
             }
 
-            public string PeekText()
+            public string? PeekText()
             {
                 if (_index < _tokens.Count)
                 {
@@ -440,7 +445,7 @@ namespace CppAst
         internal class Tokenizer
         {
             private readonly CXSourceRange _range;
-            private CppToken[] _cppTokens;
+            private CppToken[]? _cppTokens;
             protected readonly CXTranslationUnit _tu;
 
             public Tokenizer(CXCursor cursor)
@@ -532,7 +537,7 @@ namespace CppAst
                 return TokenSpelling;
             }
 
-            public string TokensToString()
+            public string? TokensToString()
             {
                 int length = Count;
                 if (length <= 0)
@@ -924,7 +929,7 @@ namespace CppAst
             Error,
         }
 
-        private static (string, string) GetNameSpaceAndAttribute(string fullAttribute)
+        private static (string?, string) GetNameSpaceAndAttribute(string fullAttribute)
         {
             string[] colons = { "::" };
             string[] tokens = fullAttribute.Split(colons, System.StringSplitOptions.None);
@@ -939,14 +944,14 @@ namespace CppAst
         }
 
 
-        private static (string, string) GetNameAndArguments(string name)
+        private static (string?, string?) GetNameAndArguments(string name)
         {
             if (name.Contains("("))
             {
                 Char[] seperator = { '(' };
                 var argumentTokens = name.Split(seperator, 2);
                 var length = argumentTokens[1].LastIndexOf(')');
-                string argument = null;
+                string? argument = null;
                 if (length > 0)
                 {
                     argument = argumentTokens[1].Substring(0, length);
@@ -959,7 +964,7 @@ namespace CppAst
             }
         }
 
-        private static bool ParseAttributes(CppGlobalDeclarationContainer globalContainer, TokenIterator tokenIt, ref List<CppAttribute> attributes)
+        private static bool ParseAttributes(CppGlobalDeclarationContainer globalContainer, TokenIterator tokenIt, ref List<CppAttribute>? attributes)
         {
             // Parse C++ attributes
             // [[<attribute>]]
@@ -1035,24 +1040,26 @@ namespace CppAst
             // See if we have a macro
             var value = tokenIt.PeekText();
             var macro = globalContainer.Macros.Find(v => v.Name == value);
-            if (macro != null)
+            if (macro is { Value: not null })
             {
                 if (macro.Value.StartsWith("[[") && macro.Value.EndsWith("]]"))
                 {
-                    CppAttribute attribute = null;
                     var fullAttribute = macro.Value.Substring(2, macro.Value.Length - 4);
                     var (scope, name) = GetNameSpaceAndAttribute(fullAttribute);
                     var (attributeName, arguments) = GetNameAndArguments(name);
+                    
+                    if (attributeName is null)
+                        throw new Exception($"Invalid attribute name: {fullAttribute}");
 
-                    attribute = new CppAttribute(attributeName, AttributeKind.TokenAttribute);
-                    attribute.Scope = scope;
-                    attribute.Arguments = arguments;
-
-                    if (attributes == null)
+                    var attribute = new CppAttribute(attributeName, AttributeKind.TokenAttribute)
                     {
-                        attributes = new List<CppAttribute>();
-                    }
+                        Scope = scope,
+                        Arguments = arguments
+                    };
+
+                    attributes ??= [];
                     attributes.Add(attribute);
+                    
                     tokenIt.Next();
                     return true;
                 }
@@ -1061,21 +1068,24 @@ namespace CppAst
             return false;
         }
 
-        private static bool ParseAttribute(TokenIterator tokenIt, out CppAttribute attribute)
+        private static bool ParseAttribute(TokenIterator tokenIt, [MaybeNullWhen(false)] out CppAttribute attribute)
         {
             // (identifier ::)? identifier ('(' tokens ')' )? (...)?
             attribute = null;
             var token = tokenIt.Peek();
-            if (token == null || !token.Kind.IsIdentifierOrKeyword())
-            {
+            if (token == null)
                 return false;
-            }
+            if (!token.Kind.IsIdentifierOrKeyword())
+                return false;
+            
             tokenIt.Next(out token);
+            if (token == null)
+                throw new Exception("Unexpected end of file");
 
             var firstToken = token;
 
             // try (identifier ::)?
-            string scope = null;
+            string? scope = null;
             if (tokenIt.Skip("::"))
             {
                 scope = token.Text;
@@ -1086,12 +1096,14 @@ namespace CppAst
                     return false;
                 }
                 tokenIt.Next(out token);
+                if (token == null)
+                    throw new Exception("Unexpected end of file");
             }
 
             // identifier
             string tokenIdentifier = token.Text;
 
-            string arguments = null;
+            string? arguments = null;
 
             // ('(' tokens ')' )?
             if (tokenIt.Skip("("))
@@ -1100,6 +1112,9 @@ namespace CppAst
                 var previousTokenKind = CppTokenKind.Punctuation;
                 while (tokenIt.PeekText() != ")" && tokenIt.Next(out token))
                 {
+                    if (token == null)
+                        throw new Exception("Unexpected end of file");
+                    
                     if (token.Kind.IsIdentifierOrKeyword() && previousTokenKind.IsIdentifierOrKeyword())
                     {
                         builder.Append(" ");
@@ -1118,7 +1133,10 @@ namespace CppAst
             var isVariadic = tokenIt.Skip("...");
 
             var previousToken = tokenIt.PreviousToken();
-
+            
+            if (firstToken == null || previousToken == null)
+                throw new Exception("Invalid attribute token sequence");
+            
             attribute = new CppAttribute(tokenIdentifier, AttributeKind.TokenAttribute)
             {
                 Span = new CppSourceSpan(firstToken.Span.Start, previousToken.Span.End),

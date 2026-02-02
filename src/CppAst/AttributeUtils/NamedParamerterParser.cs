@@ -40,7 +40,7 @@ namespace CppAst
         [Language("NamedParameter.CppAst", "0.1", "Grammer for named parameter")]
         public class NamedParameterGrammer : Irony.Parsing.Grammar
         {
-            static NamedParameterGrammer sGrammer;
+            static NamedParameterGrammer? sGrammer;
             public static NamedParameterGrammer Instance
             {
                 get
@@ -183,7 +183,7 @@ namespace CppAst
         #endregion
 
 
-        public static bool ParseNamedParameters(string content, Dictionary<string, object> outNamedParameterDic, out string errorMessage)
+        public static bool ParseNamedParameters(string content, Dictionary<string, object?> outNamedParameterDic, out string errorMessage)
         {
             errorMessage = "";
 
@@ -208,14 +208,14 @@ namespace CppAst
             }
             else
             {
-                errorMessage = ast.ParserMessages.ToString();
+                errorMessage = ast.ParserMessages?.ToString() ?? "";
             }
 
             return false;
         }
 
 
-        private static object ParseExpressionValue(ParseTreeNode node)
+        private static object? ParseExpressionValue(ParseTreeNode node)
         {
             switch (node.Term.Name)
             {
@@ -257,7 +257,7 @@ namespace CppAst
             }
         }
 
-        private static void ParseAssignment(ParseTreeNode node, Dictionary<string, object> outNamedParameterDic)
+        private static void ParseAssignment(ParseTreeNode node, Dictionary<string, object?> outNamedParameterDic)
         {
             string varName = node.ChildNodes[0].Token.ValueString;
             if(!outNamedParameterDic.ContainsKey(varName))
@@ -273,7 +273,7 @@ namespace CppAst
             }
         }
 
-        private static void ParseLoopItem(Irony.Parsing.ParseTreeNode loopNode, Dictionary<string, object> outNamedParameterDic)
+        private static void ParseLoopItem(Irony.Parsing.ParseTreeNode loopNode, Dictionary<string, object?> outNamedParameterDic)
         {
             ParseAssignment(loopNode.ChildNodes[1], outNamedParameterDic);
 
@@ -332,7 +332,7 @@ namespace CppAst
                 }
                 else
                 {
-                    realValue = nodeValue.ToString();
+                    realValue = nodeValue?.ToString() ?? "";
                 }
 
                 if (builder.Length > 0)
@@ -346,7 +346,7 @@ namespace CppAst
             return builder.ToString();
         }
         
-        private static StringBuilder ParseClassToken(ParseTreeNodeList nodeList)
+        private static StringBuilder? ParseClassToken(ParseTreeNodeList nodeList)
         {
             if (nodeList.Count == 0)
             {

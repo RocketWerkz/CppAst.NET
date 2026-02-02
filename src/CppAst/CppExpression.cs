@@ -26,7 +26,7 @@ namespace CppAst
         /// <summary>
         /// Gets the arguments of this expression. Might be null.
         /// </summary>
-        public List<CppExpression> Arguments { get; set; }
+        public List<CppExpression>? Arguments { get; set; }
 
         /// <summary>
         /// Adds an argument to this expression.
@@ -72,7 +72,7 @@ namespace CppAst
         /// <summary>
         /// Gets or sets a textual representation from the tokens.
         /// </summary>
-        public string Text { get; set; }
+        public string? Text { get; set; }
 
         /// <summary>
         /// Update the <see cref="Text"/> representation from the <see cref="Tokens"/>.
@@ -83,7 +83,7 @@ namespace CppAst
         }
 
         /// <inheritdoc />
-        public override string ToString()
+        public override string? ToString()
         {
             return Text;
         }
@@ -120,7 +120,7 @@ namespace CppAst
         /// <summary>
         /// The binary operator as a string.
         /// </summary>
-        public string Operator { get; set; }
+        public string? Operator { get; set; }
 
         /// <inheritdoc />
         public override string ToString()
@@ -155,7 +155,7 @@ namespace CppAst
         /// <summary>
         /// The unary operator as a string.
         /// </summary>
-        public string Operator { get; set; }
+        public string? Operator { get; set; }
 
         /// <inheritdoc />
         public override string ToString()
