@@ -141,12 +141,12 @@ inline namespace __1
 
                     var cppStruct = compilation.FindByFullName<CppClass>("A::MyStruct");
                     Assert.AreEqual(inlineNs.Classes[0], cppStruct);
-                    Assert.AreEqual(cppStruct.FullName, "A::MyStruct<T>");
+                    Assert.AreEqual(cppStruct?.FullName, "A::MyStruct<T>");
 
                     var cppTypedef = compilation.FindByFullName<CppTypedef>("A::MyStructInt");
-                    var cppStructInt = cppTypedef.ElementType as CppClass;
+                    var cppStructInt = cppTypedef?.ElementType as CppClass;
                     //So now we can use this full name in exporter convenience.
-                    Assert.AreEqual(cppStructInt.FullName, "A::MyStruct<int>");
+                    Assert.AreEqual(cppStructInt?.FullName, "A::MyStruct<int>");
                 }
             );
         }

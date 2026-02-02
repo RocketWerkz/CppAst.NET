@@ -53,7 +53,7 @@ const unsigned int var4 = (unsigned int) 125;
                         Assert.AreEqual(CppTypeKind.Qualified, cppField.Type.TypeKind);
                         Assert.AreEqual(CppTypeQualifier.Const, ((CppQualifiedType)cppField.Type).Qualifier);
                         Assert.NotNull(cppField.InitExpression);
-                        Assert.AreEqual("123", cppField.InitExpression.ToString());
+                        Assert.AreEqual("123", cppField.InitExpression?.ToString());
                     }
 
                     {
@@ -62,7 +62,7 @@ const unsigned int var4 = (unsigned int) 125;
                         Assert.AreEqual(CppTypeKind.Qualified, cppField.Type.TypeKind);
                         Assert.AreEqual(CppTypeQualifier.Const, ((CppQualifiedType)cppField.Type).Qualifier);
                         Assert.NotNull(cppField.InitExpression);
-                        Assert.AreEqual("(unsigned int)125", cppField.InitExpression.ToString());
+                        Assert.AreEqual("(unsigned int)125", cppField.InitExpression?.ToString());
                     }
                 }
             );

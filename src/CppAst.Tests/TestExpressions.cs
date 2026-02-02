@@ -52,7 +52,7 @@ const int x = (0 + 1) << 2;
                 var cppField = compilation.Fields[0];
 
                 Assert.NotNull(cppField.InitValue?.Value);
-                Assert.AreEqual(4, cppField.InitValue.Value);
+                Assert.AreEqual(4, cppField.InitValue?.Value);
 
                 Assert.NotNull(cppField.InitExpression);
                 Assert.IsInstanceOf<CppBinaryExpression>(cppField.InitExpression);
@@ -74,12 +74,12 @@ const int x = ~(128 + 2);
 
                 Assert.NotNull(cppField.InitValue?.Value);
                 var result = ~(128 + 2);
-                Assert.AreEqual(result, cppField.InitValue.Value);
+                Assert.AreEqual(result, cppField.InitValue?.Value);
 
                 Assert.NotNull(cppField.InitExpression);
                 Assert.IsInstanceOf<CppUnaryExpression>(cppField.InitExpression);
 
-                Assert.AreEqual("~(128 + 2)", cppField.InitExpression.ToString());
+                Assert.AreEqual("~(128 + 2)", cppField.InitExpression?.ToString());
             });
         }
 
@@ -96,12 +96,12 @@ const int x = 12|1;
 
                 Assert.NotNull(cppField.InitValue?.Value);
                 var result = 12 | 1;
-                Assert.AreEqual(result, cppField.InitValue.Value);
+                Assert.AreEqual(result, cppField.InitValue?.Value);
 
                 Assert.NotNull(cppField.InitExpression);
                 Assert.IsInstanceOf<CppBinaryExpression>(cppField.InitExpression);
 
-                Assert.AreEqual("12 | 1", cppField.InitExpression.ToString());
+                Assert.AreEqual("12 | 1", cppField.InitExpression?.ToString());
             });
         }
 
@@ -119,12 +119,12 @@ void MyFunction(int x = (1 + 2) * 3);
                 var cppParam = parameters[0];
 
                 Assert.NotNull(cppParam.InitValue?.Value);
-                Assert.AreEqual(9, cppParam.InitValue.Value);
+                Assert.AreEqual(9, cppParam.InitValue?.Value);
 
                 Assert.NotNull(cppParam.InitExpression);
                 Assert.IsInstanceOf<CppBinaryExpression>(cppParam.InitExpression);
 
-                Assert.AreEqual("(1 + 2) * 3", cppParam.InitExpression.ToString());
+                Assert.AreEqual("(1 + 2) * 3", cppParam.InitExpression?.ToString());
 
                 Assert.AreEqual("void MyFunction(int x = (1 + 2) * 3)", compilation.Functions[0].ToString());
             });
@@ -145,7 +145,7 @@ const void* NullPtr = nullptr;
 
                 Assert.IsInstanceOf<CppRawExpression>(cppField.InitExpression);
 
-                Assert.AreEqual("nullptr", cppField.InitExpression.ToString());
+                Assert.AreEqual("nullptr", cppField.InitExpression?.ToString());
             });
         }
     }

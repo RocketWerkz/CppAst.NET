@@ -38,8 +38,8 @@ enum class Enum2 : short
                     {
                         var cppEnum = compilation.Enums[0];
                         Assert.AreEqual("Enum0", cppEnum.Name);
-                        Assert.AreEqual(CppTypeKind.Primitive, cppEnum.IntegerType.TypeKind);
-                        Assert.AreEqual(CppPrimitiveKind.Int, ((CppPrimitiveType)cppEnum.IntegerType).Kind);
+                        Assert.AreEqual(CppTypeKind.Primitive, cppEnum.IntegerType?.TypeKind);
+                        Assert.AreEqual(CppPrimitiveKind.Int, (cppEnum.IntegerType as CppPrimitiveType)?.Kind);
                         Assert.AreEqual(3, cppEnum.Items.Count);
                         Assert.AreEqual(sizeof(int), cppEnum.SizeOf);
                         Assert.False(cppEnum.IsScoped);
@@ -57,8 +57,8 @@ enum class Enum2 : short
                     {
                         var cppEnum = compilation.Enums[1];
                         Assert.AreEqual("Enum1", cppEnum.Name);
-                        Assert.AreEqual(CppTypeKind.Primitive, cppEnum.IntegerType.TypeKind);
-                        Assert.AreEqual(CppPrimitiveKind.Int, ((CppPrimitiveType)cppEnum.IntegerType).Kind);
+                        Assert.AreEqual(CppTypeKind.Primitive, cppEnum.IntegerType?.TypeKind);
+                        Assert.AreEqual(CppPrimitiveKind.Int, (cppEnum.IntegerType as CppPrimitiveType)?.Kind);
                         Assert.AreEqual(3, cppEnum.Items.Count);
                         Assert.AreEqual(sizeof(int), cppEnum.SizeOf);
                         Assert.True(cppEnum.IsScoped);
@@ -73,8 +73,8 @@ enum class Enum2 : short
                     {
                         var cppEnum = compilation.Enums[2];
                         Assert.AreEqual("Enum2", cppEnum.Name);
-                        Assert.AreEqual(CppTypeKind.Primitive, cppEnum.IntegerType.TypeKind);
-                        Assert.AreEqual(CppPrimitiveKind.Short, ((CppPrimitiveType)cppEnum.IntegerType).Kind);
+                        Assert.AreEqual(CppTypeKind.Primitive, cppEnum.IntegerType?.TypeKind);
+                        Assert.AreEqual(CppPrimitiveKind.Short, (cppEnum.IntegerType as CppPrimitiveType)?.Kind);
                         Assert.AreEqual(3, cppEnum.Items.Count);
                         Assert.AreEqual(sizeof(short), cppEnum.SizeOf);
                         Assert.True(cppEnum.IsScoped);

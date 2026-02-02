@@ -44,8 +44,8 @@ namespace CppAst.Tests
                         Assert.AreEqual("MACRO2", macro.Name);
                         Assert.AreEqual("", macro.Value);
                         Assert.NotNull(macro.Parameters);
-                        Assert.AreEqual(1, macro.Parameters.Count);
-                        Assert.AreEqual("x", macro.Parameters[0]);
+                        Assert.AreEqual(1, macro.Parameters?.Count);
+                        Assert.AreEqual("x", macro.Parameters?[0]);
                     }
 
                     {
@@ -53,8 +53,8 @@ namespace CppAst.Tests
                         Assert.AreEqual("MACRO3", macro.Name);
                         Assert.AreEqual("x+1", macro.Value);
                         Assert.NotNull(macro.Parameters);
-                        Assert.AreEqual(1, macro.Parameters.Count);
-                        Assert.AreEqual("x", macro.Parameters[0]);
+                        Assert.AreEqual(1, macro.Parameters?.Count);
+                        Assert.AreEqual("x", macro.Parameters?[0]);
 
                         Assert.AreEqual(3, macro.Tokens.Count);
                         Assert.AreEqual("x", macro.Tokens[0].Text);

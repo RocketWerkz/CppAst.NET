@@ -69,8 +69,8 @@ class __cppast(script, is_browsable=true, desc=""a class"") TestClass
 
                     Assert.AreEqual(1, cppClass.Fields.Count);
                     var memField = cppClass.Fields[0];
-                    Assert.AreEqual(1, memField.Attributes.Count);
-                    Assert.AreEqual(memField.Attributes[0].Arguments, "desc=\"a member field\"");
+                    Assert.AreEqual(1, memField.Attributes?.Count);
+                    Assert.AreEqual(memField.Attributes?[0].Arguments, "desc=\"a member field\"");
                 }
             );
         }

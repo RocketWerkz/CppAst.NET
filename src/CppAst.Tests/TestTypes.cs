@@ -50,7 +50,7 @@ t1* f4;
                     };
 
                     var canonicalTypes = compilation.Typedefs.Select(x => x.GetCanonicalType()).Concat(compilation.Fields.Select(x => x.Type.GetCanonicalType())).ToList();
-                    Assert.AreEqual(types.Select(x => x.SizeOf), canonicalTypes.Select(x => x.SizeOf));
+                    Assert.AreEqual(types.Select(x => x.SizeOf), canonicalTypes.Select(x => x?.SizeOf));
                 }
             );
         }
@@ -80,29 +80,29 @@ TemplateStruct<int, Struct2> unexposed;
                     Assert.AreEqual(2, compilation.Fields.Count);
 
                     var exposed = compilation.Fields[0].Type as CppClass;
-                    Assert.AreEqual("TemplateStruct", exposed.Name);
-                    Assert.AreEqual(2, exposed.TemplateParameters.Count);
-                    Assert.AreEqual(CppTemplateArgumentKind.AsType, exposed.TemplateSpecializedArguments[0]?.ArgKind);
-                    Assert.AreEqual(CppPrimitiveKind.Int, (exposed.TemplateSpecializedArguments[0]?.ArgAsType as CppPrimitiveType).Kind);
-                    Assert.AreEqual("Struct2", (exposed.TemplateSpecializedArguments[1].ArgAsType as CppClass)?.Name);
+                    Assert.AreEqual("TemplateStruct", exposed?.Name);
+                    Assert.AreEqual(2, exposed?.TemplateParameters.Count);
+                    Assert.AreEqual(CppTemplateArgumentKind.AsType, exposed?.TemplateSpecializedArguments[0]?.ArgKind);
+                    Assert.AreEqual(CppPrimitiveKind.Int, (exposed?.TemplateSpecializedArguments[0]?.ArgAsType as CppPrimitiveType)?.Kind);
+                    Assert.AreEqual("Struct2", (exposed?.TemplateSpecializedArguments[1].ArgAsType as CppClass)?.Name);
 
-                    var specialized = exposed.SpecializedTemplate;
-                    Assert.AreEqual("TemplateStruct", specialized.Name);
-                    Assert.AreEqual(2, specialized.Fields.Count);
-                    Assert.AreEqual("field0", specialized.Fields[0].Name);
-                    Assert.AreEqual("T", specialized.Fields[0].Type.GetDisplayName());
-                    Assert.AreEqual("field1", specialized.Fields[1].Name);
-                    Assert.AreEqual("U", specialized.Fields[1].Type.GetDisplayName());
+                    var specialized = exposed?.SpecializedTemplate;
+                    Assert.AreEqual("TemplateStruct", specialized?.Name);
+                    Assert.AreEqual(2, specialized?.Fields.Count);
+                    Assert.AreEqual("field0", specialized?.Fields[0].Name);
+                    Assert.AreEqual("T", specialized?.Fields[0].Type.GetDisplayName());
+                    Assert.AreEqual("field1", specialized?.Fields[1].Name);
+                    Assert.AreEqual("U", specialized?.Fields[1].Type.GetDisplayName());
 
                     var unexposed = compilation.Fields[1].Type as CppClass;
-                    Assert.AreEqual("TemplateStruct", unexposed.Name);
-                    Assert.AreEqual(2, unexposed.TemplateParameters.Count);
-                    Assert.AreEqual(CppTemplateArgumentKind.AsType, unexposed.TemplateSpecializedArguments[0]?.ArgKind);
-                    Assert.AreEqual(CppPrimitiveKind.Int, (exposed.TemplateSpecializedArguments[0]?.ArgAsType as CppPrimitiveType).Kind);
-                    Assert.AreEqual("Struct2", (unexposed.TemplateSpecializedArguments[1].ArgAsType as CppClass)?.Name);
+                    Assert.AreEqual("TemplateStruct", unexposed?.Name);
+                    Assert.AreEqual(2, unexposed?.TemplateParameters.Count);
+                    Assert.AreEqual(CppTemplateArgumentKind.AsType, unexposed?.TemplateSpecializedArguments[0]?.ArgKind);
+                    Assert.AreEqual(CppPrimitiveKind.Int, (exposed?.TemplateSpecializedArguments[0]?.ArgAsType as CppPrimitiveType)?.Kind);
+                    Assert.AreEqual("Struct2", (unexposed?.TemplateSpecializedArguments[1].ArgAsType as CppClass)?.Name);
 
-                    Assert.AreNotEqual(exposed.GetHashCode(), specialized.GetHashCode());
-                    Assert.AreEqual(exposed.GetHashCode(), unexposed.GetHashCode());
+                    Assert.AreNotEqual(exposed?.GetHashCode(), specialized?.GetHashCode());
+                    Assert.AreEqual(exposed?.GetHashCode(), unexposed?.GetHashCode());
                 }
             );
         }

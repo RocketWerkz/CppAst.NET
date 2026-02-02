@@ -46,7 +46,7 @@ void *fun2(int align) __attribute__((alloc_align(1)));
 
                     Assert.AreEqual(1, compilation.Fields.Count);
                     Assert.NotNull(compilation.Fields[0].Attributes);
-                    Assert.AreEqual("dllimport", compilation.Fields[0].Attributes[0].Name);
+                    Assert.AreEqual("dllimport", compilation.Fields[0].Attributes?[0].Name);
 
                     Assert.AreEqual(3, compilation.Functions.Count);
                     Assert.NotNull(compilation.Functions[0].Attributes);
@@ -103,10 +103,10 @@ alignas(128) char cacheline[128];", compilation =>
                 Assert.False(compilation.HasErrors);
 
                 Assert.AreEqual(1, compilation.Fields.Count);
-                Assert.AreEqual(1, compilation.Fields[0].Attributes.Count);
+                Assert.AreEqual(1, compilation.Fields[0].Attributes?.Count);
                 {
-                    var attr = compilation.Fields[0].Attributes[0];
-                    Assert.AreEqual("alignas", attr.Name);
+                    var attr = compilation.Fields[0].Attributes?[0];
+                    Assert.AreEqual("alignas", attr?.Name);
                 }
             },
             // we are using a C++14 attribute because it can be used everywhere
@@ -208,17 +208,17 @@ struct Test{
 
                 Assert.AreEqual(1, compilation.Classes.Count);
                 Assert.AreEqual(2, compilation.Classes[0].Fields.Count);
-                Assert.AreEqual(1, compilation.Classes[0].Fields[0].Attributes.Count);
+                Assert.AreEqual(1, compilation.Classes[0].Fields[0].Attributes?.Count);
                 {
-                    var attr = compilation.Classes[0].Fields[0].Attributes[0];
-                    Assert.AreEqual("deprecated", attr.Name);
+                    var attr = compilation.Classes[0].Fields[0].Attributes?[0];
+                    Assert.AreEqual("deprecated", attr?.Name);
                 }
 
                 Assert.AreEqual(1, compilation.Fields.Count);
-                Assert.AreEqual(1, compilation.Fields[0].Attributes.Count);
+                Assert.AreEqual(1, compilation.Fields[0].Attributes?.Count);
                 {
-                    var attr = compilation.Fields[0].Attributes[0];
-                    Assert.AreEqual("deprecated", attr.Name);
+                    var attr = compilation.Fields[0].Attributes?[0];
+                    Assert.AreEqual("deprecated", attr?.Name);
                 }
             },
             // we are using a C++14 attribute because it can be used everywhere
