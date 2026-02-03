@@ -1647,14 +1647,16 @@ namespace CppAst
 
             // Gets the return type
             var returnType = GetCppType(cursor.ResultType.Declaration, cursor.ResultType, cursor, data);
-            if (cppClass != null && cppClass.ClassKind == CppClassKind.ObjCInterface)
+            if (cppClass is { ClassKind: CppClassKind.ObjCInterface })
             {
                 if (returnType is CppTypedef typedef && typedef.Name == "instancetype")
                 {
                     returnType = new CppPointerType(cppClass);
                 }
             }
-            cppFunction.ReturnType = returnType;
+            
+            cppFunction.ReturnType = returnType
+                ?? throw new InvalidOperationException($"Unable to get return type for cursor `{cursor}`");
 
             ParseAttributes(cursor, cppFunction, true);
             cppFunction.CallingConvention = GetCallingConvention(cursor.Type);

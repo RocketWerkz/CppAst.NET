@@ -53,7 +53,7 @@ namespace CppAst
         /// <summary>
         /// Gets or sets the return type.
         /// </summary>
-        public CppType? ReturnType { get; set; }
+        public CppType ReturnType { get; set; } = null!; // can be null until fully initialized
 
         /// <summary>
         /// Gets or sets a boolean indicating whether this method is a constructor method.
