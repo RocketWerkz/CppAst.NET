@@ -184,8 +184,7 @@ namespace CppAst
                 parent = GetOrCreateDeclarationContainer(cursor.SemanticParent, data).Container;
             }
 
-            ICppDeclarationContainer parentDeclarationContainer = parent as ICppDeclarationContainer
-                ?? throw new InvalidOperationException($"Unable to find a declaration container for this cursor {cursor}");
+            ICppDeclarationContainer? parentDeclarationContainer = parent as ICppDeclarationContainer;
             
             var parentGlobalDeclarationContainer = parent as ICppGlobalDeclarationContainer;
 
@@ -207,6 +206,7 @@ namespace CppAst
                         IsAnonymous = cursor.IsAnonymous,
                         Visibility = GetVisibility(cursor.CXXAccessSpecifier)
                     };
+                    Debug.Assert(parentDeclarationContainer != null);
                     parentDeclarationContainer.Enums.Add(cppEnum);
                     symbol = cppEnum;
                     break;
@@ -221,6 +221,7 @@ namespace CppAst
                 case CXCursorKind.CXCursor_ObjCProtocolDecl:
                 case CXCursorKind.CXCursor_ObjCCategoryDecl:
                     var cppClass = new CppClass(CXUtil.GetCursorSpelling(cursor));
+                    Debug.Assert(parentDeclarationContainer != null);
                     parentDeclarationContainer.Classes.Add(cppClass);
                     symbol = cppClass;
                     cppClass.IsAnonymous = cursor.IsAnonymous;
