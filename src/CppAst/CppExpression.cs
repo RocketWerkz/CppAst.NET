@@ -120,7 +120,7 @@ namespace CppAst
         /// <summary>
         /// The binary operator as a string.
         /// </summary>
-        public string? Operator { get; set; }
+        public string Operator { get; set; } = null!;
 
         /// <inheritdoc />
         public override string ToString()
@@ -155,7 +155,7 @@ namespace CppAst
         /// <summary>
         /// The unary operator as a string.
         /// </summary>
-        public string? Operator { get; set; }
+        public string Operator { get; set; } = null!;
 
         /// <inheritdoc />
         public override string ToString()
