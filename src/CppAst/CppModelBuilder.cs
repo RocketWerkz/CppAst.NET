@@ -1287,19 +1287,19 @@ namespace CppAst
                     AppendTokensToExpression(cursor, expr);
                     break;
                 case CXCursorKind.CXCursor_IntegerLiteral:
-                    expr = new CppLiteralExpression(CppExpressionKind.IntegerLiteral, GetCursorAsText(cursor) ?? throw new InvalidOperationException($"Unable to get cursor text for cursor `{cursor}`"));
+                    expr = new CppLiteralExpression(CppExpressionKind.IntegerLiteral, GetCursorAsText(cursor) ?? string.Empty);
                     break;
                 case CXCursorKind.CXCursor_FloatingLiteral:
-                    expr = new CppLiteralExpression(CppExpressionKind.FloatingLiteral, GetCursorAsText(cursor) ?? throw new InvalidOperationException($"Unable to get cursor text for cursor `{cursor}`"));
+                    expr = new CppLiteralExpression(CppExpressionKind.FloatingLiteral, GetCursorAsText(cursor) ?? string.Empty);
                     break;
                 case CXCursorKind.CXCursor_ImaginaryLiteral:
-                    expr = new CppLiteralExpression(CppExpressionKind.ImaginaryLiteral, GetCursorAsText(cursor) ?? throw new InvalidOperationException($"Unable to get cursor text for cursor `{cursor}`"));
+                    expr = new CppLiteralExpression(CppExpressionKind.ImaginaryLiteral, GetCursorAsText(cursor) ?? string.Empty);
                     break;
                 case CXCursorKind.CXCursor_StringLiteral:
-                    expr = new CppLiteralExpression(CppExpressionKind.StringLiteral, GetCursorAsText(cursor) ?? throw new InvalidOperationException($"Unable to get cursor text for cursor `{cursor}`"));
+                    expr = new CppLiteralExpression(CppExpressionKind.StringLiteral, GetCursorAsText(cursor) ?? string.Empty);
                     break;
                 case CXCursorKind.CXCursor_CharacterLiteral:
-                    expr = new CppLiteralExpression(CppExpressionKind.CharacterLiteral, GetCursorAsText(cursor) ?? throw new InvalidOperationException($"Unable to get cursor text for cursor `{cursor}`"));
+                    expr = new CppLiteralExpression(CppExpressionKind.CharacterLiteral, GetCursorAsText(cursor) ?? string.Empty);
                     break;
                 case CXCursorKind.CXCursor_ParenExpr:
                     expr = new CppParenExpression();
