@@ -1,4 +1,4 @@
-using Brutal.Interop;
+using Brutal.NET.Extensions;
 using NUnit.Framework;
 
 namespace CppAst.Tests

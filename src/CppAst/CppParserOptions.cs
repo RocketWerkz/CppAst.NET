@@ -2,7 +2,7 @@
 // Licensed under the BSD-Clause 2 license.
 // See license.txt file in the project root for full license information.
 
-using Brutal.Interop;
+using Brutal.NET.Extensions;
 using CliWrap;
 using CliWrap.Buffered;
 
