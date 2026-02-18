@@ -355,6 +355,72 @@ void function0(int a, int b, float (*callback)(void*, double));
                 }
             );
         }
+        
+        [Test]
+        public void TestMacroDefaultArguments()
+        {
+            ParseAssert("""
+                        #define UINT_MAX (2u * 0x7FFFFFFF + 1)
+                        int test(unsigned int val = UINT_MAX);
+                        """, compilation =>
+            {
+                Assert.False(compilation.HasErrors);
+                Assert.AreEqual(1, compilation.Functions.Count);
+                var cppFunction = compilation.Functions[0];
+                Assert.AreEqual("test", cppFunction.Name);
+                Assert.AreEqual(1, cppFunction.Parameters.Count);
+                
+                var firstParam = cppFunction.Parameters[0];
+                Assert.AreEqual("unsigned int", firstParam.Type.ToString());
+                Assert.AreEqual(4294967295, firstParam.InitValue?.Value);
+                
+                var parenExpr = firstParam.InitExpression as CppParenExpression
+                    ?? throw new AssertionException("Expected a paren expression");
+                
+                var parenArgs = parenExpr.Arguments ?? throw new AssertionException("Expected arguments");
+                Assert.AreEqual(1, parenArgs.Count);
+                
+                var addOperation = parenArgs[0] as CppBinaryExpression
+                    ?? throw new AssertionException("Expected a binary expression");
+                
+                Assert.AreEqual("+", addOperation.Operator);
+                Assert.NotNull(addOperation.Arguments);
+                Assert.AreEqual(2, addOperation.Arguments?.Count);
+                
+                var addArgs = addOperation.Arguments ?? throw new AssertionException("Expected arguments");
+                Assert.AreEqual(2, addArgs.Count);
+                
+                var mulOperation = addArgs[0] as CppBinaryExpression
+                    ?? throw new AssertionException("Expected a binary expression");
+                
+                Assert.NotNull(mulOperation);
+                
+                Assert.AreEqual("*", mulOperation.Operator);
+                Assert.NotNull(mulOperation.Arguments);
+                Assert.AreEqual(2, mulOperation.Arguments?.Count);
+                
+                var mulArgs = mulOperation.Arguments ?? throw new AssertionException("Expected arguments");
+                Assert.AreEqual(2, mulArgs.Count);
+                
+                Assert.IsTrue(mulArgs[0] is CppLiteralExpression
+                {
+                    Kind: CppExpressionKind.IntegerLiteral,
+                    Value: "2u"
+                });
+                
+                Assert.IsTrue(mulArgs[1] is CppLiteralExpression
+                {
+                    Kind: CppExpressionKind.IntegerLiteral,
+                    Value: "0x7FFFFFFF"
+                });
+                
+                Assert.IsTrue(addArgs[1] is CppLiteralExpression
+                {
+                    Kind: CppExpressionKind.IntegerLiteral,
+                    Value: "1"
+                });
+            });
+        }
 
 
 
