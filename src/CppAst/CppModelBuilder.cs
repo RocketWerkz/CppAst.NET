@@ -731,6 +731,23 @@ namespace CppAst
             return CXChildVisitResult.CXChildVisit_Continue;
         }
 
+        private CppMacro? FindMacro(CXCursor cursor)
+        {
+            if (cursor.Kind is CXCursorKind.CXCursor_MacroDefinition or CXCursorKind.CXCursor_MacroExpansion)
+                return null;
+
+            var globalContainer = _rootContainerContext!.DeclarationContainer as CppGlobalDeclarationContainer
+                ?? throw new InvalidOperationException("RootContainerContext.DeclarationContainer is not CppGlobalDeclarationContainer");
+
+            cursor.Extent.Start.GetSpellingLocation(out var file, out _, out _, out var offset);
+
+            var fullPath = Path.GetFullPath(file.Name.CString);
+
+            return globalContainer.Macros.Find(m => m.SourceFile == fullPath
+                                                    && m.Span.Start.Offset <= offset
+                                                    && m.Span.End.Offset >= offset);
+        }
+
         private CppComment? GetComment(CXCursor cursor)
         {
             var cxComment = cursor.ParsedComment;
@@ -1259,6 +1276,20 @@ namespace CppAst
         private CppExpression? VisitExpression(CXCursor cursor, void* data)
         {
             CppExpression? expr = null;
+
+            // Replace macro expansion callsite with expansion expression referencing the macro.
+            // Ideally we can also add a parsed expression to the macro expansion, for now this doesn't work
+            // correctly due to reliance on cursor.Extent which doesn't work as expected for macros.
+            if (FindMacro(cursor) is {} macro)
+            {
+                expr = new CppMacroExpansionExpression(CppExpressionKind.Unexposed)
+                {
+                    Macro = macro,
+                };
+                AssignSourceSpan(cursor, expr);
+                return expr;
+            }
+
             bool visitChildren = false;
             switch (cursor.Kind)
             {
