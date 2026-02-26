@@ -1352,7 +1352,10 @@ namespace CppAst
                     AppendTokensToExpression(cursor, expr);
                     break;
                 case CXCursorKind.CXCursor_BinaryOperator:
-                    expr = new CppBinaryExpression(CppExpressionKind.BinaryOperator);
+                    expr = new CppBinaryExpression(CppExpressionKind.BinaryOperator)
+                    {
+                        Operator = cursor.BinaryOperatorKindSpelling.ToString(),
+                    };
                     visitChildren = true;
                     break;
                 case CXCursorKind.CXCursor_CompoundAssignOperator:
@@ -1512,17 +1515,6 @@ namespace CppAst
 
                     return CXChildVisitResult.CXChildVisit_Continue;
                 }, new CXClientData((IntPtr)data));
-            }
-
-            switch (cursor.Kind)
-            {
-                case CXCursorKind.CXCursor_BinaryOperator:
-                    if (expr is null) throw new InvalidOperationException($"Unable to get expression for cursor `{cursor}`");
-                    if (expr.Arguments?.Count != 2) throw new InvalidOperationException($"Expected 2 arguments for binary operator, got {expr.Arguments?.Count ?? 0}");
-                    var beforeOperatorOffset = expr.Arguments[0].Span.End.Offset;
-                    var afterOperatorOffset = expr.Arguments[1].Span.Start.Offset;
-                    ((CppBinaryExpression)expr).Operator = GetCursorAsTextBetweenOffset(cursor, beforeOperatorOffset, afterOperatorOffset);
-                    break;
             }
 
             return expr;
