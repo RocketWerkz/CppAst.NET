@@ -739,7 +739,7 @@ namespace CppAst
             var globalContainer = _rootContainerContext!.DeclarationContainer as CppGlobalDeclarationContainer
                 ?? throw new InvalidOperationException("RootContainerContext.DeclarationContainer is not CppGlobalDeclarationContainer");
 
-            cursor.Extent.Start.GetSpellingLocation(out var file, out var line, out var column, out var offset);
+            cursor.Extent.Start.GetSpellingLocation(out var file, out _, out _, out var offset);
 
             var fullPath = Path.GetFullPath(file.Name.CString);
 
@@ -1273,26 +1273,23 @@ namespace CppAst
             return cursor.Kind >= CXCursorKind.CXCursor_FirstExpr && cursor.Kind <= CXCursorKind.CXCursor_LastExpr;
         }
 
-
         private CppExpression? VisitExpression(CXCursor cursor, void* data)
         {
+            CppExpression? expr = null;
+
+            // Replace macro expansion callsite with expansion expression referencing the macro.
+            // Ideally we can also add a parsed expression to the macro expansion, for now this doesn't work
+            // correctly due to reliance on cursor.Extent which doesn't work as expected for macros.
             if (FindMacro(cursor) is {} macro)
             {
-                var expr = new CppMacroExpansion(CppExpressionKind.Unexposed)
+                expr = new CppMacroExpansionExpression(CppExpressionKind.Unexposed)
                 {
                     Macro = macro,
-                    Expression = VisitExpressionImpl(cursor, data),
                 };
                 AssignSourceSpan(cursor, expr);
                 return expr;
             }
 
-            return VisitExpressionImpl(cursor, data);
-        }
-
-        private CppExpression? VisitExpressionImpl(CXCursor cursor, void* data)
-        {
-            CppExpression? expr = null;
             bool visitChildren = false;
             switch (cursor.Kind)
             {
@@ -1507,7 +1504,7 @@ namespace CppAst
             {
                 cursor.VisitChildren((listCursor, initListCursor, clientData) =>
                 {
-                    var item = VisitExpressionImpl(listCursor, data);
+                    var item = VisitExpression(listCursor, data);
                     if (item != null)
                     {
                         expr.AddArgument(item);
@@ -1524,10 +1521,7 @@ namespace CppAst
         {
             if (expression is CppRawExpression tokensExpr)
             {
-                var macro = FindMacro(cursor);
-                var tokenizer = macro is null
-                    ? new CppTokenUtil.Tokenizer(cursor)
-                    : new CppTokenUtil.Tokenizer(cursor.TranslationUnit, cursor.SourceRangeRaw);
+                var tokenizer = new CppTokenUtil.Tokenizer(cursor);
                 for (int i = 0; i < tokenizer.Count; i++)
                 {
                     tokensExpr.Tokens.Add(tokenizer[i]);
@@ -2178,7 +2172,7 @@ namespace CppAst
             return returnValue;
         }
 
-        private static string? GetCursorAsText(CXCursor cursor) => new CppTokenUtil.Tokenizer(cursor.TranslationUnit, cursor.SourceRangeRaw).TokensToString();
+        private static string? GetCursorAsText(CXCursor cursor) => new CppTokenUtil.Tokenizer(cursor).TokensToString();
 
         private string GetCursorAsTextBetweenOffset(CXCursor cursor, int startOffset, int endOffset)
         {
