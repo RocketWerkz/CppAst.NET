@@ -740,8 +740,11 @@ namespace CppAst
                 ?? throw new InvalidOperationException("RootContainerContext.DeclarationContainer is not CppGlobalDeclarationContainer");
 
             cursor.Extent.Start.GetSpellingLocation(out var file, out _, out _, out var offset);
+            
+            if (file.Handle == 0 || string.IsNullOrWhiteSpace(file.Name.ToString()))
+                return null;
 
-            var fullPath = Path.GetFullPath(file.Name.CString);
+            var fullPath = Path.GetFullPath(file.Name.ToString());
 
             return globalContainer.Macros.Find(m => m.SourceFile == fullPath
                                                     && m.Span.Start.Offset <= offset
