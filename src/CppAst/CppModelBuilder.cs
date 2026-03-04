@@ -731,14 +731,12 @@ namespace CppAst
             return CXChildVisitResult.CXChildVisit_Continue;
         }
 
-        private bool IsMacroExpansion(CXCursor cursor, [MaybeNullWhen(false)] out CppMacro parsedMacro)
+        private bool IsMacroExpansion(CXCursor cursor, [MaybeNullWhen(false)] out string macroName)
         {
-            parsedMacro = null;
+            macroName = null;
+
             if (cursor.Kind is CXCursorKind.CXCursor_MacroDefinition or CXCursorKind.CXCursor_MacroExpansion)
                 return false;
-
-            var globalContainer = _rootContainerContext!.DeclarationContainer as CppGlobalDeclarationContainer
-                ?? throw new InvalidOperationException("RootContainerContext.DeclarationContainer is not CppGlobalDeclarationContainer");
 
             cursor.Extent.Start.GetSpellingLocation(out var spellingFile, out _, out _, out var spellingOffset);
             cursor.Extent.Start.GetExpansionLocation(out var expansionFile, out _, out _, out var expansionOffset);
@@ -757,12 +755,7 @@ namespace CppAst
             if (token is null)
                 throw new Exception($"Could not find token for expansion {expansionFile.Name}");
 
-            var macroName = token->GetSpelling(tu);
-
-            parsedMacro = globalContainer
-                              .Macros
-                              .FirstOrDefault(m => m?.Name == macroName.ToString(), null)
-                          ?? new CppMacro(macroName.ToString());
+            macroName = token->GetSpelling(tu).ToString();
 
             return true;
         }
@@ -1299,11 +1292,11 @@ namespace CppAst
             // Replace macro expansion callsite with expansion expression referencing the macro.
             // Ideally we can also add a parsed expression to the macro expansion, for now this doesn't work
             // correctly due to reliance on cursor.Extent which doesn't work as expected for macros.
-            if (IsMacroExpansion(cursor, out var parsedMacro))
+            if (IsMacroExpansion(cursor, out var macroName))
             {
                 expr = new CppMacroExpansionExpression(CppExpressionKind.Unexposed)
                 {
-                    Macro = parsedMacro
+                    MacroName = macroName
                 };
                 AssignSourceSpan(cursor, expr);
                 return expr;
